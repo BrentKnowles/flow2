@@ -532,8 +532,8 @@ namespace TestTreeGenerator
 
                             */
 
-                            dt.AddTreeDataTableRow(title_id, supervisor, values[0].ToUpper(), person,"","");
-                            this is addedBoss test
+                            dt.AddTreeDataTableRow(title_id, supervisor, values[0].ToUpper(), "zzap","","");
+                            
 
 
                             addedBoss = true;
@@ -543,8 +543,8 @@ namespace TestTreeGenerator
                                 string[] values2 = s.Split(new char[1] { ';' }, StringSplitOptions.None);
                                 if (values2.Length >=3)
                                 {
-                                    category = values2[1];
-                                    SOD = values2[2];
+                                    category = "boom";// values2[1];
+                                    SOD = "carl";// values2[2];
                                 }
 
                                 dt.AddTreeDataTableRow(s, _id,values2[0], "justperson",category,SOD);
@@ -571,8 +571,20 @@ namespace TestTreeGenerator
 
                 if (addedBoss == false)
                 {
-                    
-                    dt.AddTreeDataTableRow(title_id, supervisor, values[0].ToUpper(), person, "", "");
+
+                    // * Break string mode
+                    const int lengthtottest = 10;
+                    string titletext = values[0];
+                    string line2text = "";
+                    if (titletext.Length > lengthtottest)
+                    {
+                        line2text = titletext.Substring(lengthtottest);
+                        titletext = titletext.Substring(0, lengthtottest);
+                    }
+
+
+
+                    dt.AddTreeDataTableRow(title_id, supervisor, titletext.ToUpper(), line2text, "", "");
                 }
                 addedBoss = false;
 
