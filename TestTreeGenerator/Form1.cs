@@ -571,18 +571,19 @@ namespace TestTreeGenerator
 
                 if (addedBoss == false)
                 {
-
+                    
                     // * Break string mode
-                    const int lengthtottest = 10;
+                    
                     string titletext = values[0];
                     string line2text = "";
-                    if (titletext.Length > lengthtottest)
+                  /*  int idx = titletext.IndexOf("*");
+                    if (idx > -1)
                     {
-                        line2text = titletext.Substring(lengthtottest);
-                        titletext = titletext.Substring(0, lengthtottest);
+                        line2text = titletext.Substring(idx);
+                        titletext = titletext.Substring(0, idx);
                     }
-
-
+                    don't actually need since word wrap ALREADY HAPPENS?S?
+                    */
 
                     dt.AddTreeDataTableRow(title_id, supervisor, titletext.ToUpper(), line2text, "", "");
                 }

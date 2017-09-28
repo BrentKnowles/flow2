@@ -545,6 +545,7 @@ namespace TreeGenerator
             Pen boxPen = new Pen(_LineColor, _LineWidth);
             StringFormat drawFormat = new StringFormat();
             drawFormat.Alignment = StringAlignment.Center;
+            drawFormat.LineAlignment = StringAlignment.Center;
             //find children
             
             /**/
