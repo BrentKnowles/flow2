@@ -588,9 +588,11 @@ namespace TreeGenerator
                 // x and y area ctually screen locations 
                 int mylevel = Int32.Parse(oNode.Attributes["level"].Value);
                 Color colorToUse = _BoxFillColor;
-                if (mylevel > 0)
+                if (mylevel < 2)
                 {
-                   // colorToUse = Color.Pink;
+                    // colorToUse = Color.Pink;
+                    if (drawString.IndexOf("PC BROWSER") == -1)
+                    drawFont = new Font(drawFont, FontStyle.Bold);
                 }
                 if (drawString.IndexOf("SEASON 1") > -1)
                 {
@@ -601,9 +603,16 @@ namespace TreeGenerator
                 {
                     _BoxFillColor = Color.BurlyWood;
                     colorToUse = _BoxFillColor;
+                    
+                }
+                if (drawString.IndexOf("SEASON 3") > -1)
+                {
+                    _BoxFillColor = Color.CadetBlue;
+                    colorToUse = _BoxFillColor;
+
                 }
                 gr.FillRectangle(new SolidBrush(colorToUse), currentRectangle);
-
+                
        
             }
 
