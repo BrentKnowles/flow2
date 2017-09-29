@@ -254,7 +254,7 @@ namespace TreeGenerator
                 rootSOD = ((TreeData.TreeDataTableRow)dtTree.Select(string.Format("nodeID='{0}'", StartFromNodeID))[0]).nodeSOD;
             }
            
-            XmlNode RootNode = GetXMLNode(StartFromNodeID, rootDescription, rootNote,rootCategory,rootSOD);
+            XmlNode RootNode = GetXMLNode(StartFromNodeID, rootDescription, rootNote,rootCategory,rootSOD,-1);
             nodeTree.AppendChild(RootNode);
             BuildTree(RootNode, 0);
 
@@ -324,7 +324,7 @@ namespace TreeGenerator
         /// convert the datatable to an XML document
         /// </summary>
         /// <param name="oNode"></param>
-        /// <param name="y"></param>
+        /// <param name="y">its the node level nothing for parent, 0 for first child row, etc.</param>
         private void BuildTree(XmlNode oNode, int y)
         {
             XmlNode childNode = null;
@@ -333,7 +333,7 @@ namespace TreeGenerator
                 string.Format("parentNodeID='{0}'", oNode.Attributes["nodeID"].InnerText)))
             {
                 //for each child node call this function again
-                childNode = GetXMLNode(childRow.nodeID, childRow.nodeDescription, childRow.nodeNote,childRow.nodeCategory,childRow.nodeSOD);
+                childNode = GetXMLNode(childRow.nodeID, childRow.nodeDescription , childRow.nodeNote,childRow.nodeCategory,childRow.nodeSOD, y);
                 oNode.AppendChild(childNode);
                 BuildTree(childNode, y + 1);
 
@@ -489,7 +489,7 @@ namespace TreeGenerator
         /// create an xml node based on supplied data
         /// </summary>
         /// <returns></returns>
-        private XmlNode GetXMLNode(string nodeID,string nodeDescription,string nodeNote, string nodeCategory, string nodeSOD)
+        private XmlNode GetXMLNode(string nodeID,string nodeDescription,string nodeNote, string nodeCategory, string nodeSOD, int level)
         {
             //build the node
             XmlNode resultNode = nodeTree.CreateElement("Node");
@@ -501,6 +501,7 @@ namespace TreeGenerator
             XmlAttribute attNodeSOD = nodeTree.CreateAttribute("nodeSOD");
             XmlAttribute attStartX = nodeTree.CreateAttribute("X");
             XmlAttribute attStartY = nodeTree.CreateAttribute("Y");
+            XmlAttribute attlevel = nodeTree.CreateAttribute("level");
             
             //set the values of what we know
             attNodeID.InnerText = nodeID;
@@ -511,7 +512,9 @@ namespace TreeGenerator
             attNodeSOD.InnerText = nodeSOD;
             attStartX.InnerText = "0";
             attStartY.InnerText = "0";
-            
+
+            attlevel.InnerText =  level.ToString();
+
             resultNode.Attributes.Append(attNodeID);
             
             resultNode.Attributes.Append(attNodeDescription);
@@ -520,7 +523,8 @@ namespace TreeGenerator
             resultNode.Attributes.Append(attNodeSOD);
             resultNode.Attributes.Append(attStartX);
             resultNode.Attributes.Append(attStartY);
-            
+            resultNode.Attributes.Append(attlevel);
+
             return resultNode;
         
         }
@@ -543,13 +547,15 @@ namespace TreeGenerator
             SolidBrush drawBrushError = new SolidBrush(Color.Red);
 
             Pen boxPen = new Pen(_LineColor, _LineWidth);
+
+
             StringFormat drawFormat = new StringFormat();
             drawFormat.Alignment = StringAlignment.Center;
             drawFormat.LineAlignment = StringAlignment.Center;
             //find children
             
             /**/
-
+            
             Rectangle currentRectangle = getRectangleFromNode(oNode);
 
             String drawString = oNode.Attributes["nodeDescription"].InnerText +
@@ -578,7 +584,25 @@ namespace TreeGenerator
             {
                 // Draw existing box
                 gr.DrawRectangle(boxPen, currentRectangle);
-                gr.FillRectangle(new SolidBrush(_BoxFillColor), currentRectangle);
+
+                // x and y area ctually screen locations 
+                int mylevel = Int32.Parse(oNode.Attributes["level"].Value);
+                Color colorToUse = _BoxFillColor;
+                if (mylevel > 0)
+                {
+                   // colorToUse = Color.Pink;
+                }
+                if (drawString.IndexOf("SEASON 1") > -1)
+                {
+                    _BoxFillColor = Color.BlanchedAlmond;
+                    colorToUse = _BoxFillColor;
+                }
+                if (drawString.IndexOf("SEASON 2") > -1)
+                {
+                    _BoxFillColor = Color.BurlyWood;
+                    colorToUse = _BoxFillColor;
+                }
+                gr.FillRectangle(new SolidBrush(colorToUse), currentRectangle);
 
        
             }
