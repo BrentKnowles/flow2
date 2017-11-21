@@ -1,4 +1,4 @@
-#region Copyright © 2007 Rotem Sapir
+#region Copyright Â© 2007 Rotem Sapir
 /*
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from the
@@ -11,7 +11,7 @@
  * that you wrote the original software. If you use this software in a product,
  * an acknowledgment in the product documentation is required, as shown here:
  *
- * Portions Copyright © 2007 Rotem Sapir
+ * Portions Copyright Â© 2007 Rotem Sapir
  *
  * 2. No substantial portion of the source code of this library may be redistributed
  * without the express written permission of the copyright holders, where
@@ -265,6 +265,41 @@ namespace TreeGenerator
             gr = Graphics.FromImage(bmp);
             gr.Clear(_BGColor);
             DrawChart(RootNode);
+
+            foreach (lineToLine liner in listOfLinesToAdd)
+            {
+                Rectangle source = new Rectangle(0, 0, 0, 0);
+                Rectangle dest = new Rectangle(0, 0, 0, 0);
+                foreach (Regions region in listOfBoxRegions)
+                {
+                    if (region.name.Trim() == liner.source)
+                    {
+                        source = region.Rect;
+                    }
+                    else
+                        if (region.name.Trim() == liner.dest)
+                    {
+                        dest = region.Rect;
+                    }
+                }
+
+
+
+                Pen extraPen = new Pen(Color.Pink, _LineWidth);
+                // draw an extra line
+                gr.DrawLine(extraPen, source.Right,
+                                       source.Bottom,
+                                       dest.Left ,
+                                       dest.Top );
+
+
+                gr.DrawLine(extraPen, 10,
+                                       100,
+                                      100,
+                                       100);
+
+            }
+
 
             //if caller does not care about size, use original calculated size
             if (Width < 0)
@@ -536,6 +571,21 @@ namespace TreeGenerator
 
         System.Collections.Hashtable peopleHash = new System.Collections.Hashtable(); // Will contain consistent colors by person/category
         System.Collections.Hashtable catHash = new System.Collections.Hashtable(); // Will contain consistent colors by person/category
+
+        System.Collections.ArrayList listOfBoxRegions = new System.Collections.ArrayList();
+        System.Collections.ArrayList listOfLinesToAdd = new System.Collections.ArrayList();
+
+            public struct lineToLine
+        {
+            public string source;
+            public string dest;
+        }
+        public struct Regions
+        {
+            public Rectangle Rect;
+            public string name;
+        }
+
         /// <summary>
         /// Draws the actual chart image.
         /// </summary>
@@ -588,29 +638,65 @@ namespace TreeGenerator
                 // x and y area ctually screen locations 
                 int mylevel = Int32.Parse(oNode.Attributes["level"].Value);
                 Color colorToUse = _BoxFillColor;
-                if (mylevel < 2)
+                if (drawString.IndexOf("(A)")> 0 )
                 {
-                    // colorToUse = Color.Pink;
-                    if (drawString.IndexOf("PC BROWSER") == -1)
-                    drawFont = new Font(drawFont, FontStyle.Bold);
+                    // we are an action node, use alt colors
+                    //_BoxFillColor = Color.BlanchedAlmond;
+                    colorToUse = Color.BlanchedAlmond;
+                    drawString = drawString.Replace("(A)", "");
                 }
-                if (drawString.IndexOf("SEASON 1") > -1)
+                int indexOfLineStart = drawString.IndexOf("(LINE");
+                if (indexOfLineStart > -1)
                 {
-                    _BoxFillColor = Color.BlanchedAlmond;
-                    colorToUse = _BoxFillColor;
-                }
-                if (drawString.IndexOf("SEASON 2") > -1)
-                {
-                    _BoxFillColor = Color.BurlyWood;
-                    colorToUse = _BoxFillColor;
-                    
-                }
-                if (drawString.IndexOf("SEASON 3") > -1)
-                {
-                    _BoxFillColor = Color.CadetBlue;
-                    colorToUse = _BoxFillColor;
+                    // determine destination
+                    string original = drawString.Substring(indexOfLineStart, drawString.Length - indexOfLineStart-1);
+                    string[] bits = drawString.Split(new char[1] { ':' });
+                    // destwill be in bits[1];
+                    if (bits.Length >=2)
+                    {
 
+                    
+                        lineToLine liner = new lineToLine();
+                        liner.source = bits[0].Substring(0, bits[0].Length - 5).Trim();
+                        int idx = bits[1].IndexOf(")");
+                        liner.dest = bits[1].Substring(0, idx-1).Trim();
+                        listOfLinesToAdd.Add(liner);
+                    }
+                    //TODO: Is the best thing to do here is to store all the names and nodes and their RECT coordinates?
+                    // then search for them later?
+
+                    drawString = drawString.Substring(0, indexOfLineStart);
+
+
+                  
                 }
+                if (false)
+                {
+                    if (mylevel < 2)
+                    {
+                        // colorToUse = Color.Pink;
+                        if (drawString.IndexOf("PC BROWSER") == -1)
+                            drawFont = new Font(drawFont, FontStyle.Bold);
+                    }
+                    if (drawString.IndexOf("SEASON 1") > -1)
+                    {
+                        _BoxFillColor = Color.BlanchedAlmond;
+                        colorToUse = _BoxFillColor;
+                    }
+                    if (drawString.IndexOf("SEASON 2") > -1)
+                    {
+                        _BoxFillColor = Color.BurlyWood;
+                        colorToUse = _BoxFillColor;
+
+                    }
+                    if (drawString.IndexOf("SEASON 3") > -1)
+                    {
+                        _BoxFillColor = Color.CadetBlue;
+                        colorToUse = _BoxFillColor;
+
+                    }
+                }
+                
                 gr.FillRectangle(new SolidBrush(colorToUse), currentRectangle);
                 
        
@@ -657,8 +743,11 @@ namespace TreeGenerator
 
             currentRectangle = oldRectangle;
             //draw connecting lines
+            Regions thisRegion = new Regions();
+            thisRegion.name = drawString;
+            thisRegion.Rect = currentRectangle;
+            listOfBoxRegions.Add(thisRegion);
 
-            
             if (oNode.ParentNode.Name != "#document")
             {
                 //all but the top box should have lines growing out of their top
