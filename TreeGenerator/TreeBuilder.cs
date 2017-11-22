@@ -1,4 +1,4 @@
-#region Copyright © 2007 Rotem Sapir
+#region Copyright Â© 2007 Rotem Sapir
 /*
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from the
@@ -11,7 +11,7 @@
  * that you wrote the original software. If you use this software in a product,
  * an acknowledgment in the product documentation is required, as shown here:
  *
- * Portions Copyright © 2007 Rotem Sapir
+ * Portions Copyright Â© 2007 Rotem Sapir
  *
  * 2. No substantial portion of the source code of this library may be redistributed
  * without the express written permission of the copyright holders, where
