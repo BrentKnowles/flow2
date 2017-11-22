@@ -182,6 +182,8 @@ namespace TreeGenerator
         public void UpdateTable(TreeData.TreeDataTableDataTable TreeData)
         {
             dtTree = TreeData;
+            listOfBoxRegions.Clear();
+            listOfLinesToAdd.Clear();
         }
             
         public void Dispose()
@@ -657,9 +659,9 @@ namespace TreeGenerator
 
                     
                         lineToLine liner = new lineToLine();
-                        liner.source = bits[0].Substring(0, bits[0].Length - 5).Trim();
+                        liner.source = bits[0].Substring(0, bits[0].Length - 5).Trim().ToLower();
                         int idx = bits[1].IndexOf(")");
-                        liner.dest = bits[1].Substring(0, idx-1).Trim();
+                        liner.dest = bits[1].Substring(0, idx).Trim().ToLower();
                         listOfLinesToAdd.Add(liner);
                     }
                     //TODO: Is the best thing to do here is to store all the names and nodes and their RECT coordinates?
@@ -744,7 +746,7 @@ namespace TreeGenerator
             currentRectangle = oldRectangle;
             //draw connecting lines
             Regions thisRegion = new Regions();
-            thisRegion.name = drawString;
+            thisRegion.name = drawString.ToLower();
             thisRegion.Rect = currentRectangle;
             listOfBoxRegions.Add(thisRegion);
 
