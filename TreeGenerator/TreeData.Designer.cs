@@ -286,9 +286,15 @@ namespace TreeGenerator {
             private global::System.Data.DataColumn columnnodeDescription;
             
             private global::System.Data.DataColumn columnnodeNote;
+            
             private global::System.Data.DataColumn columnnodeCategory;
+            
             private global::System.Data.DataColumn columnnodeSOD;
-
+            
+            private global::System.Data.DataColumn columnscripting;
+            
+            private global::System.Data.DataColumn columnnodetype;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public TreeDataTableDataTable() {
@@ -353,25 +359,39 @@ namespace TreeGenerator {
                     return this.columnnodeNote;
                 }
             }
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public global::System.Data.DataColumn nodeCategoryColumn
-            {
-                get
-                {
+            public global::System.Data.DataColumn nodeCategoryColumn {
+                get {
                     return this.columnnodeCategory;
                 }
             }
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public global::System.Data.DataColumn nodeSODColumn
-            {
-                get
-                {
+            public global::System.Data.DataColumn nodeSODColumn {
+                get {
                     return this.columnnodeSOD;
                 }
             }
-
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn scriptingColumn {
+                get {
+                    return this.columnscripting;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn nodetypeColumn {
+                get {
+                    return this.columnnodetype;
+                }
+            }
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
@@ -409,13 +429,17 @@ namespace TreeGenerator {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public TreeDataTableRow AddTreeDataTableRow(string nodeID, string parentNodeID, string nodeDescription, string nodeNote, string nodeCategory, string nodeSOD) {
+            public TreeDataTableRow AddTreeDataTableRow(string nodeID, string parentNodeID, string nodeDescription, string nodeNote, string nodeCategory, string nodeSOD, string scripting, string nodetype) {
                 TreeDataTableRow rowTreeDataTableRow = ((TreeDataTableRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         nodeID,
                         parentNodeID,
                         nodeDescription,
-                        nodeNote, nodeCategory, nodeSOD};
+                        nodeNote,
+                        nodeCategory,
+                        nodeSOD,
+                        scripting,
+                        nodetype};
                 rowTreeDataTableRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowTreeDataTableRow);
                 return rowTreeDataTableRow;
@@ -452,6 +476,8 @@ namespace TreeGenerator {
                 this.columnnodeNote = base.Columns["nodeNote"];
                 this.columnnodeCategory = base.Columns["nodeCategory"];
                 this.columnnodeSOD = base.Columns["nodeSOD"];
+                this.columnscripting = base.Columns["scripting"];
+                this.columnnodetype = base.Columns["nodetype"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -465,13 +491,14 @@ namespace TreeGenerator {
                 base.Columns.Add(this.columnnodeDescription);
                 this.columnnodeNote = new global::System.Data.DataColumn("nodeNote", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnnodeNote);
-
                 this.columnnodeCategory = new global::System.Data.DataColumn("nodeCategory", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnnodeCategory);
-
                 this.columnnodeSOD = new global::System.Data.DataColumn("nodeSOD", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnnodeSOD);
-
+                this.columnscripting = new global::System.Data.DataColumn("scripting", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnscripting);
+                this.columnnodetype = new global::System.Data.DataColumn("nodetype", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnnodetype);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnnodeID,
                                 this.columnparentNodeID}, true));
@@ -654,49 +681,7 @@ namespace TreeGenerator {
                     this[this.tableTreeDataTable.nodeDescriptionColumn] = value;
                 }
             }
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public string nodeCategory
-            {
-                get
-                {
-                    try
-                    {
-                        return ((string)(this[this.tableTreeDataTable.nodeCategoryColumn]));
-                    }
-                    catch (global::System.InvalidCastException e)
-                    {
-                        throw new global::System.Data.StrongTypingException("The value for column \'nodeCategory\' in table \'TreeDataTable\' is DBNull.", e);
-                    }
-                }
-                set
-                {
-                    this[this.tableTreeDataTable.nodeCategoryColumn] = value;
-                }
-            }
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public string nodeSOD
-            {
-                get
-                {
-                    try
-                    {
-                        return ((string)(this[this.tableTreeDataTable.nodeSODColumn]));
-                    }
-                    catch (global::System.InvalidCastException e)
-                    {
-                        throw new global::System.Data.StrongTypingException("The value for column \'nodeSod\' in table \'TreeDataTable\' is DBNull.", e);
-                    }
-                }
-                set
-                {
-                    this[this.tableTreeDataTable.nodeSODColumn] = value;
-                }
-            }
-
-
-
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public string nodeNote {
@@ -710,6 +695,70 @@ namespace TreeGenerator {
                 }
                 set {
                     this[this.tableTreeDataTable.nodeNoteColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string nodeCategory {
+                get {
+                    try {
+                        return ((string)(this[this.tableTreeDataTable.nodeCategoryColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'nodeCategory\' in table \'TreeDataTable\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableTreeDataTable.nodeCategoryColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string nodeSOD {
+                get {
+                    try {
+                        return ((string)(this[this.tableTreeDataTable.nodeSODColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'nodeSOD\' in table \'TreeDataTable\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableTreeDataTable.nodeSODColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string scripting {
+                get {
+                    try {
+                        return ((string)(this[this.tableTreeDataTable.scriptingColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'scripting\' in table \'TreeDataTable\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableTreeDataTable.scriptingColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string nodetype {
+                get {
+                    try {
+                        return ((string)(this[this.tableTreeDataTable.nodetypeColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'nodetype\' in table \'TreeDataTable\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableTreeDataTable.nodetypeColumn] = value;
                 }
             }
             
@@ -735,6 +784,54 @@ namespace TreeGenerator {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public void SetnodeNoteNull() {
                 this[this.tableTreeDataTable.nodeNoteColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool IsnodeCategoryNull() {
+                return this.IsNull(this.tableTreeDataTable.nodeCategoryColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void SetnodeCategoryNull() {
+                this[this.tableTreeDataTable.nodeCategoryColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool IsnodeSODNull() {
+                return this.IsNull(this.tableTreeDataTable.nodeSODColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void SetnodeSODNull() {
+                this[this.tableTreeDataTable.nodeSODColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool IsscriptingNull() {
+                return this.IsNull(this.tableTreeDataTable.scriptingColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void SetscriptingNull() {
+                this[this.tableTreeDataTable.scriptingColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool IsnodetypeNull() {
+                return this.IsNull(this.tableTreeDataTable.nodetypeColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void SetnodetypeNull() {
+                this[this.tableTreeDataTable.nodetypeColumn] = global::System.Convert.DBNull;
             }
         }
         

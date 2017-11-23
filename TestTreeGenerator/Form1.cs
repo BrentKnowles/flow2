@@ -70,7 +70,7 @@ namespace TestTreeGenerator
 
         }
        // private TreeGenerator.
-        private TreeBuilder myTree=null;
+        private TreeBuilderSimple myTree=null;
         private void ShowTree()
         {
             System.IO.Stream stream = myTree.GenerateTree(-1, -1, "1", System.Drawing.Imaging.ImageFormat.Bmp, checkBoxCategory.Checked, checkBoxOverridePerson.Checked);
@@ -287,7 +287,8 @@ namespace TestTreeGenerator
             //        ShowTree();
 
             // September 27 2017 - I disabled the above because I wanted to use the formatting I picked
-            myTree.UpdateTable(GetTreeData(TreeBuilder.mode.ORG));
+            //myTree.UpdateTable(GetTreeData(TreeBuilder.mode.ORG));
+            myTree.UpdateTable(GetBetterTreeData());
             ShowTree();
         }
 
@@ -322,7 +323,7 @@ namespace TestTreeGenerator
             
             //instantiate the object
             //myOrgChart = new OrgChartGenerator.OrgChart(myOrgData);
-            myTree = new TreeBuilder(GetTreeData(TreeBuilder.mode.ORG));
+            myTree = new TreeBuilderSimple(GetTreeData(TreeBuilder.mode.ORG));
             SetControlValues();    
         }
 
@@ -359,6 +360,34 @@ namespace TestTreeGenerator
             }
         }
 
+        
+            //dt.AddTreeDataTableRow(title_id, supervisor, values[0].ToUpper(), "zzap","","","","");
+        
+        /// <summary>
+        /// Trying to have a better structure here for building the tree data
+        /// </summary>
+        /// <returns></returns>
+        private TreeData.TreeDataTableDataTable GetBetterTreeData()
+        {
+            
+            TreeData.TreeDataTableDataTable dt = new TreeData.TreeDataTableDataTable();
+
+        
+            NodeDetails nodeDetails = new NodeDetails(1);
+           
+
+            dt.AddTreeDataTableRow(nodeDetails.nodeID, nodeDetails.parentNodeID, nodeDetails.nodeDescription,
+                nodeDetails.nodeNote, nodeDetails.nodeCategory,nodeDetails.nodeSOD, nodeDetails.scripting, nodeDetails.nodetype);
+            nodeDetails.nodeID = "2";
+            nodeDetails.parentNodeID = "1";
+            nodeDetails.nodeDescription = "snakes";
+
+            dt.AddTreeDataTableRow(nodeDetails.nodeID, nodeDetails.parentNodeID, nodeDetails.nodeDescription,
+               nodeDetails.nodeNote, nodeDetails.nodeCategory, nodeDetails.nodeSOD, nodeDetails.scripting, nodeDetails.nodetype);
+
+
+            return dt;
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -532,7 +561,7 @@ namespace TestTreeGenerator
 
                             */
 
-                            dt.AddTreeDataTableRow(title_id, supervisor, values[0].ToUpper(), "zzap","","");
+                            dt.AddTreeDataTableRow(title_id, supervisor, values[0].ToUpper(), "zzap","","","","");
                             
 
 
@@ -547,7 +576,7 @@ namespace TestTreeGenerator
                                     SOD = "carl";// values2[2];
                                 }
 
-                                dt.AddTreeDataTableRow(s, _id,values2[0], "justperson",category,SOD);
+                                dt.AddTreeDataTableRow(s, _id,values2[0], "justperson",category,SOD,"", "");
                                 _id = s;
 
                                 if (mode == TreeBuilder.mode.DUTY)
@@ -585,7 +614,7 @@ namespace TestTreeGenerator
                     don't actually need since word wrap ALREADY HAPPENS?S?
                     */
 
-                    dt.AddTreeDataTableRow(title_id, supervisor, titletext.ToUpper(), line2text, "", "");
+                    dt.AddTreeDataTableRow(title_id, supervisor, titletext.ToUpper(), line2text, "", "","", "");
                 }
                 addedBoss = false;
 
@@ -604,9 +633,9 @@ namespace TestTreeGenerator
 
         private void buttonDuties_Click(object sender, EventArgs e)
         {
-            myTree = new TreeBuilder(GetTreeData(TreeBuilder.mode.DUTY));
+            myTree = new TreeBuilderSimple(GetTreeData(TreeBuilder.mode.DUTY));
             myTree.SetSchema_TaskChart();
-            myTree.myMode = TreeBuilder.mode.DUTY;
+            myTree.myMode = TreeBuilderSimple.mode.DUTY;
             ShowTree();
         }
 

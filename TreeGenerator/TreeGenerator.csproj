@@ -46,6 +46,7 @@
     <Compile Include="NodePos.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TreeBuilder.cs" />
+    <Compile Include="TreeBuilderSimple.cs" />
     <Compile Include="TreeData.cs">
       <DependentUpon>TreeData.xsd</DependentUpon>
     </Compile>

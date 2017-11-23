@@ -3,25 +3,26 @@
   <xs:annotation>
     <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
       <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
-        <Connections>
-        </Connections>
-        <Tables>
-        </Tables>
-        <Sources>
-        </Sources>
+        <Connections />
+        <Tables />
+        <Sources />
       </DataSource>
     </xs:appinfo>
   </xs:annotation>
-  <xs:element name="TreeData" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_UserDSName="TreeData" msprop:Generator_DataSetName="TreeData">
+  <xs:element name="TreeData" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_DataSetName="TreeData" msprop:Generator_UserDSName="TreeData">
     <xs:complexType>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element name="TreeDataTable" msprop:Generator_UserTableName="TreeDataTable" msprop:Generator_RowDeletedName="TreeDataTableRowDeleted" msprop:Generator_RowChangedName="TreeDataTableRowChanged" msprop:Generator_RowClassName="TreeDataTableRow" msprop:Generator_RowChangingName="TreeDataTableRowChanging" msprop:Generator_RowEvArgName="TreeDataTableRowChangeEvent" msprop:Generator_RowEvHandlerName="TreeDataTableRowChangeEventHandler" msprop:Generator_TableClassName="TreeDataTableDataTable" msprop:Generator_TableVarName="tableTreeDataTable" msprop:Generator_RowDeletingName="TreeDataTableRowDeleting" msprop:Generator_TablePropName="TreeDataTable">
+        <xs:element name="TreeDataTable" msprop:Generator_UserTableName="TreeDataTable" msprop:Generator_RowEvArgName="TreeDataTableRowChangeEvent" msprop:Generator_TableVarName="tableTreeDataTable" msprop:Generator_TablePropName="TreeDataTable" msprop:Generator_RowDeletingName="TreeDataTableRowDeleting" msprop:Generator_RowChangingName="TreeDataTableRowChanging" msprop:Generator_RowDeletedName="TreeDataTableRowDeleted" msprop:Generator_RowEvHandlerName="TreeDataTableRowChangeEventHandler" msprop:Generator_TableClassName="TreeDataTableDataTable" msprop:Generator_RowChangedName="TreeDataTableRowChanged" msprop:Generator_RowClassName="TreeDataTableRow">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="nodeID" msprop:Generator_UserColumnName="nodeID" msprop:Generator_ColumnVarNameInTable="columnnodeID" msprop:Generator_ColumnPropNameInRow="nodeID" msprop:Generator_ColumnPropNameInTable="nodeIDColumn" type="xs:string" />
-              <xs:element name="parentNodeID" msprop:Generator_UserColumnName="parentNodeID" msprop:Generator_ColumnVarNameInTable="columnparentNodeID" msprop:Generator_ColumnPropNameInRow="parentNodeID" msprop:Generator_ColumnPropNameInTable="parentNodeIDColumn" type="xs:string" />
-              <xs:element name="nodeDescription" msprop:Generator_UserColumnName="nodeDescription" msprop:Generator_ColumnVarNameInTable="columnnodeDescription" msprop:Generator_ColumnPropNameInRow="nodeDescription" msprop:Generator_ColumnPropNameInTable="nodeDescriptionColumn" type="xs:string" minOccurs="0" />
-              <xs:element name="nodeNote" msprop:Generator_UserColumnName="nodeNote" msprop:Generator_ColumnVarNameInTable="columnnodeNote" msprop:Generator_ColumnPropNameInRow="nodeNote" msprop:Generator_ColumnPropNameInTable="nodeNoteColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="nodeID" msprop:Generator_ColumnVarNameInTable="columnnodeID" msprop:Generator_ColumnPropNameInRow="nodeID" msprop:Generator_ColumnPropNameInTable="nodeIDColumn" msprop:Generator_UserColumnName="nodeID" type="xs:string" />
+              <xs:element name="parentNodeID" msprop:Generator_ColumnVarNameInTable="columnparentNodeID" msprop:Generator_ColumnPropNameInRow="parentNodeID" msprop:Generator_ColumnPropNameInTable="parentNodeIDColumn" msprop:Generator_UserColumnName="parentNodeID" type="xs:string" />
+              <xs:element name="nodeDescription" msprop:Generator_ColumnVarNameInTable="columnnodeDescription" msprop:Generator_ColumnPropNameInRow="nodeDescription" msprop:Generator_ColumnPropNameInTable="nodeDescriptionColumn" msprop:Generator_UserColumnName="nodeDescription" type="xs:string" minOccurs="0" />
+              <xs:element name="nodeNote" msprop:Generator_ColumnVarNameInTable="columnnodeNote" msprop:Generator_ColumnPropNameInRow="nodeNote" msprop:Generator_ColumnPropNameInTable="nodeNoteColumn" msprop:Generator_UserColumnName="nodeNote" type="xs:string" minOccurs="0" />
+              <xs:element name="nodeCategory" msprop:Generator_ColumnVarNameInTable="columnnodeCategory" msprop:Generator_ColumnPropNameInRow="nodeCategory" msprop:Generator_ColumnPropNameInTable="nodeCategoryColumn" msprop:Generator_UserColumnName="nodeCategory" type="xs:string" minOccurs="0" />
+              <xs:element name="nodeSOD" msprop:Generator_ColumnVarNameInTable="columnnodeSOD" msprop:Generator_ColumnPropNameInRow="nodeSOD" msprop:Generator_ColumnPropNameInTable="nodeSODColumn" msprop:Generator_UserColumnName="nodeSOD" type="xs:string" minOccurs="0" />
+              <xs:element name="scripting" msprop:Generator_ColumnVarNameInTable="columnscripting" msprop:Generator_ColumnPropNameInRow="scripting" msprop:Generator_ColumnPropNameInTable="scriptingColumn" msprop:Generator_UserColumnName="scripting" type="xs:string" minOccurs="0" />
+              <xs:element name="nodetype" msprop:Generator_ColumnVarNameInTable="columnnodetype" msprop:Generator_ColumnPropNameInRow="nodetype" msprop:Generator_ColumnPropNameInTable="nodetypeColumn" msprop:Generator_UserColumnName="nodetype" type="xs:string" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
