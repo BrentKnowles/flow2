@@ -20,6 +20,10 @@ namespace TestTreeGenerator
             DataTable table = ds.Tables.Add("newtable");
             table.Columns.Add("key");
             table.Columns.Add("parentkey");
+            table.Columns.Add("nodeDescription");
+            table.Columns.Add("nodeNote");
+            table.Columns.Add("nodeScripting");
+            table.Columns.Add("nodeType");
             table.NewRow();
             dataGridView1.DataSource = ds.Tables[0];
 
@@ -135,12 +139,51 @@ namespace TestTreeGenerator
             myTree.FontColor= Color.FromArgb((int)dt2.Rows[d_fontcolor][1]);
             myTree.LineColor = Color.FromArgb((int)dt2.Rows[d_linecolor][1]);
             myTree.BGColor = Color.FromArgb((int)dt2.Rows[d_bgcolor][1]);
+            DataColumn[] keys = new DataColumn[1];
+            keys[0] = dt2.Columns[0];
+            dt2.PrimaryKey = keys;
 
 
+            myTree.format.secondline_color = setuptablevaluecolor("secondline_color");
+            myTree.format.secondline_thick = setuptablevalueint("secondline_thick");
+            myTree.format.secondaryFontColor = setuptablevaluecolor("secondaryFontColor");
             button1.Font = new Font(dt2.DefaultView[d_fontname][2].ToString(), float.Parse(dt2.DefaultView[1][1].ToString()));
             myTree.FontName = button1.Font.Name;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="c"></param>
+        private Color setuptablevaluecolor(string c)
+        {
+            Color r = Color.Pink;
+            object value = dt2.Rows.Find(c);
 
+            if (value != null)
+            {
+                object value2 = (value as DataRow)[1];
+                if (value2 != null)
+                   r = Color.FromArgb((int)value2);
+            }
+            return r;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="c"></param>
+        private int setuptablevalueint(string c)
+        {
+            int r = -1;
+            object value = dt2.Rows.Find(c);
+
+            if (value != null)
+            {
+                object value2 = (value as DataRow)[1];
+                if (value2 != null)
+                    r = ((int)value2);
+            }
+            return r;
+        }
         private void lblFontColor_Click(object sender, EventArgs e)
         {
             //DialogResult result;
@@ -360,16 +403,60 @@ namespace TestTreeGenerator
             }
         }
 
-        
-            //dt.AddTreeDataTableRow(title_id, supervisor, values[0].ToUpper(), "zzap","","","","");
-        
+        /// <summary>
+        /// 
+        /// </summary>
+        private TreeData.TreeDataTableDataTable LoadFromDatabase()
+        {
+            DataTable table = ds.Tables[0];
+            const int key = 0;
+            const int parentkey = 1;
+            const int description = 2;
+            const int note = 3;
+            const int scripting = 4;
+            const int ntype = 5;
+
+            TreeData.TreeDataTableDataTable dt = new TreeData.TreeDataTableDataTable();
+            foreach (DataRow dr in table.Rows)
+            {
+
+                if (dr[key].ToString() != "")
+                {
+                    NodeDetails nodeDetails = new NodeDetails(1);
+                    nodeDetails.nodeID = dr[key].ToString();
+                    nodeDetails.parentNodeID = dr[parentkey].ToString(); 
+
+                    
+                    if (dr[description]!=null)
+                        nodeDetails.nodeDescription = dr[description].ToString();
+                    if (dr[note] != null)
+                        nodeDetails.nodeNote = dr[note].ToString();
+                    if (dr[scripting] != null)
+                        nodeDetails.scripting = dr[scripting].ToString();
+                    if (dr[ntype] != null)
+                        nodeDetails.nodetype = dr[ntype].ToString();
+                    
+
+                   dt.AddTreeDataTableRow(nodeDetails.nodeID, nodeDetails.parentNodeID, nodeDetails.nodeDescription,
+                       nodeDetails.nodeNote, nodeDetails.nodeCategory, nodeDetails.nodeSOD, nodeDetails.scripting, nodeDetails.nodetype);
+
+
+                }
+            }
+            return dt;
+            
+        }
+
+        //dt.AddTreeDataTableRow(title_id, supervisor, values[0].ToUpper(), "zzap","","","","");
+
         /// <summary>
         /// Trying to have a better structure here for building the tree data
         /// </summary>
         /// <returns></returns>
         private TreeData.TreeDataTableDataTable GetBetterTreeData()
         {
-            
+            TreeData.TreeDataTableDataTable dt = LoadFromDatabase();
+            /*
             TreeData.TreeDataTableDataTable dt = new TreeData.TreeDataTableDataTable();
 
         
@@ -381,10 +468,30 @@ namespace TestTreeGenerator
             nodeDetails.nodeID = "2";
             nodeDetails.parentNodeID = "1";
             nodeDetails.nodeDescription = "snakes";
+            nodeDetails.scripting = "line(3);";
 
             dt.AddTreeDataTableRow(nodeDetails.nodeID, nodeDetails.parentNodeID, nodeDetails.nodeDescription,
                nodeDetails.nodeNote, nodeDetails.nodeCategory, nodeDetails.nodeSOD, nodeDetails.scripting, nodeDetails.nodetype);
 
+            nodeDetails.nodeID = "3";
+            nodeDetails.parentNodeID = "1";
+            nodeDetails.nodeDescription = "fish sticks";
+            nodeDetails.nodetype = "action";
+            nodeDetails.scripting = "";
+
+            dt.AddTreeDataTableRow(nodeDetails.nodeID, nodeDetails.parentNodeID, nodeDetails.nodeDescription,
+               nodeDetails.nodeNote, nodeDetails.nodeCategory, nodeDetails.nodeSOD, nodeDetails.scripting, nodeDetails.nodetype);
+
+
+            nodeDetails.nodeID = "4";
+            nodeDetails.parentNodeID = "3";
+            nodeDetails.nodeDescription = "baby fish";
+            nodeDetails.nodetype = "orphan";
+
+            dt.AddTreeDataTableRow(nodeDetails.nodeID, nodeDetails.parentNodeID, nodeDetails.nodeDescription,
+               nodeDetails.nodeNote, nodeDetails.nodeCategory, nodeDetails.nodeSOD, nodeDetails.scripting, nodeDetails.nodetype);
+
+            */
 
             return dt;
         }
@@ -721,6 +828,18 @@ namespace TestTreeGenerator
                 myTree.FontName = fd.Font.Name;
                 ShowTree();
             }
+        }
+
+        /// <summary>
+        /// Reconnect changes and redraw chart
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void toolStripButton5_Click(object sender, EventArgs e)
+        {
+            Bindings();
+            myTree.UpdateTable(GetBetterTreeData());
+            ShowTree();
         }
     }
 }

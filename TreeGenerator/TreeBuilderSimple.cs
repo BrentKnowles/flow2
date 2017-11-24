@@ -20,7 +20,7 @@ namespace TreeGenerator
         // nodeCategory - legacy
         // nodeSOD - not sure as of 11/23/2017 but probably org chart
         // scripting - a generic field for drawing lines and other behavior I need
-        // nodetype - condition or action
+        
         public string nodeID;
         public string parentNodeID;
         public string nodeDescription;
@@ -28,6 +28,8 @@ namespace TreeGenerator
         public string nodeCategory;
         public string nodeSOD;
         public string scripting;
+        // nodetype - condition or action
+        //   orphan - no parent line
         public string nodetype;
         public NodeDetails(int def)
         {
@@ -41,8 +43,17 @@ namespace TreeGenerator
             nodetype = "nodetype";
         }
     }
-        public class TreeBuilderSimple : IDisposable
-    { 
+    public class TreeBuilderSimple : IDisposable
+    {
+        System.Collections.Hashtable peopleHash = new System.Collections.Hashtable(); // Will contain consistent colors by person/category
+        System.Collections.Hashtable catHash = new System.Collections.Hashtable(); // Will contain consistent colors by person/category
+
+        System.Collections.ArrayList listOfBoxRegions = new System.Collections.ArrayList();
+        System.Collections.ArrayList listOfLinesToAdd = new System.Collections.ArrayList();
+        // 11/23/2017 - I switched to this so that I can more easily reference node data without attaching everything to am 
+        // XML node ... instead I just put the index number into the xml node and grab the full struct details 
+        List<NodeDetails> listOfNodeStructures = new List<NodeDetails>();
+
         public struct lineToLine
         {
             public string source;
@@ -115,6 +126,22 @@ namespace TreeGenerator
 
 
         }
+        /// <summary>
+        /// A structure to hold format details, so they are more easily "found"
+        /// </summary>
+        public struct Format
+        {
+            public int secondline_thick;
+            public Color secondline_color;
+            public Color secondaryFontColor;
+            public Format(int k)
+            {
+                secondline_thick = 4;
+                secondline_color = Color.Green;
+                secondaryFontColor = Color.Pink;
+            }
+        }
+        public Format format = new Format(1);
 
         #region Public Properties
         public XmlDocument xmlTree
@@ -279,7 +306,11 @@ namespace TreeGenerator
                 nodeDetails.nodeCategory = ((TreeData.TreeDataTableRow)dtTree.Select(string.Format("nodeID='{0}'", StartFromNodeID))[0]).nodeCategory;
                 nodeDetails.nodeSOD = ((TreeData.TreeDataTableRow)dtTree.Select(string.Format("nodeID='{0}'", StartFromNodeID))[0]).nodeSOD;
             }
-            
+            listOfNodeStructures.Clear();
+
+            // This does get called multiple times because of all the Value bindings on the UI elements
+            // especially at start there's a whole bunch of near recursive calls, worth looking into
+
             XmlNode RootNode = GetXMLNode(nodeDetails, -1);
             nodeTreeXmlDocument.AppendChild(RootNode);
             BuildTree(RootNode, 0);
@@ -311,7 +342,7 @@ namespace TreeGenerator
 
 
 
-                Pen extraPen = new Pen(Color.Pink, _LineWidth);
+                Pen extraPen = new Pen(format.secondline_color, format.secondline_thick);
                 // draw an extra line
                 gr.DrawLine(extraPen, source.Right,
                                        source.Bottom,
@@ -319,10 +350,7 @@ namespace TreeGenerator
                                        dest.Top);
 
 
-                gr.DrawLine(extraPen, 10,
-                                       100,
-                                      100,
-                                       100);
+              
 
             }
 
@@ -399,6 +427,8 @@ namespace TreeGenerator
                 nodeDetails.nodeNote = childRow.nodeNote;
                 nodeDetails.nodeCategory = childRow.nodeCategory;
                 nodeDetails.nodeSOD = childRow.nodeSOD;
+                nodeDetails.scripting = childRow.scripting;
+                nodeDetails.nodetype = childRow.nodetype;
                 //for each child node call this function again
                 childNode = GetXMLNode(nodeDetails, y);
                 oNode.AppendChild(childNode);
@@ -551,13 +581,14 @@ namespace TreeGenerator
             //}
             //return Result;
         }
-
+        
         /// <summary>
         /// create an xml node based on supplied data
         /// </summary>
         /// <returns></returns>
         private XmlNode GetXMLNode(NodeDetails nodeDetails, int level)
         {
+             listOfNodeStructures.Add(nodeDetails);
             //build the node
             XmlNode resultNode = nodeTreeXmlDocument.CreateElement("Node");
             XmlAttribute attNodeID = nodeTreeXmlDocument.CreateAttribute("nodeID");
@@ -569,6 +600,7 @@ namespace TreeGenerator
             XmlAttribute attStartX = nodeTreeXmlDocument.CreateAttribute("X");
             XmlAttribute attStartY = nodeTreeXmlDocument.CreateAttribute("Y");
             XmlAttribute attlevel = nodeTreeXmlDocument.CreateAttribute("level");
+            XmlAttribute attStruct = nodeTreeXmlDocument.CreateAttribute("nodedata");
 
             //set the values of what we know
             attNodeID.InnerText = nodeDetails.nodeID;
@@ -579,6 +611,7 @@ namespace TreeGenerator
             attNodeSOD.InnerText = nodeDetails.nodeSOD;
             attStartX.InnerText = "0";
             attStartY.InnerText = "0";
+            attStruct.InnerText = (listOfNodeStructures.Count -1).ToString();
 
             attlevel.InnerText = level.ToString();
 
@@ -591,6 +624,7 @@ namespace TreeGenerator
             resultNode.Attributes.Append(attStartX);
             resultNode.Attributes.Append(attStartY);
             resultNode.Attributes.Append(attlevel);
+            resultNode.Attributes.Append(attStruct);
 
             return resultNode;
 
@@ -601,11 +635,6 @@ namespace TreeGenerator
             return colorsToUse[hashy.Count];
         }
 
-        System.Collections.Hashtable peopleHash = new System.Collections.Hashtable(); // Will contain consistent colors by person/category
-        System.Collections.Hashtable catHash = new System.Collections.Hashtable(); // Will contain consistent colors by person/category
-
-        System.Collections.ArrayList listOfBoxRegions = new System.Collections.ArrayList();
-        System.Collections.ArrayList listOfLinesToAdd = new System.Collections.ArrayList();
 
        
 
@@ -614,11 +643,17 @@ namespace TreeGenerator
         /// </summary>
         private void DrawChart(XmlNode oNode)
         {
+            /*
+            ---------------------------------------------------------------
+            Setup
+            ---------------------------------------------------------------
+            */
             // Create font and brush.
+            //
             Font drawFont = new Font(_FontName, _FontSize);
             SolidBrush drawBrush = new SolidBrush(_FontColor);
+            SolidBrush drawSecondFontBrush = new SolidBrush(format.secondaryFontColor);
             SolidBrush drawBrushError = new SolidBrush(Color.Red);
-
             Pen boxPen = new Pen(_LineColor, _LineWidth);
 
 
@@ -627,33 +662,28 @@ namespace TreeGenerator
             drawFormat.LineAlignment = StringAlignment.Center;
             //find children
 
-            /**/
+            NodeDetails thisNodeDetails = listOfNodeStructures[Int32.Parse(oNode.Attributes["nodedata"].InnerText)];
+           
+            /*
+             ---------------------------------------------------------------
+             Action
+             ---------------------------------------------------------------
+             */
 
             Rectangle currentRectangle = getRectangleFromNode(oNode);
 
-            String drawString = oNode.Attributes["nodeDescription"].InnerText +
-                Environment.NewLine +
-                oNode.Attributes["nodeNote"].InnerText;
+            String drawString = thisNodeDetails.nodeDescription;
+            String secondString = thisNodeDetails.nodeNote;
+            //oNode.Attributes["nodeDescription"].InnerText +
+            //    Environment.NewLine +
+            //    oNode.Attributes["nodeNote"].InnerText;
 
             String drawStringCategory = oNode.Attributes["nodeCategory"].InnerText;
             String drawStringSOD = oNode.Attributes["nodeSOD"].InnerText;
 
             // Adjust height of the boxes
             Rectangle oldRectangle = currentRectangle;
-            //if (drawString.IndexOf("\n") > 100)
-            if (drawString.IndexOf("justperson") > -1)
-            {
-                drawString = drawString.Replace("justperson", "");
-                // draw smaller boxes
-                int count = drawString.Split('\n').Length - 1;
-                int Diff = (count - 2) * 12;
-                Size newSize = new Size(currentRectangle.Size.Width, currentRectangle.Size.Height + Diff);
-
-                currentRectangle = new Rectangle(currentRectangle.Location, newSize);
-                //  gr.DrawRectangle(boxPen, new_currentRectangle);
-                //  gr.FillRectangle(new SolidBrush(_BoxFillColor), new_currentRectangle);
-            }
-            // else
+           
             {
                 // Draw existing box
                 gr.DrawRectangle(boxPen, currentRectangle);
@@ -661,38 +691,34 @@ namespace TreeGenerator
                 // x and y area ctually screen locations 
                 int mylevel = Int32.Parse(oNode.Attributes["level"].Value);
                 Color colorToUse = _BoxFillColor;
-                if (drawString.IndexOf("(A)") > 0)
+
+                // ------------------------------------------
+                // Do something with "type"
+                // ------------------------------------------
+                if (thisNodeDetails.nodetype == "action")
                 {
-                    // we are an action node, use alt colors
-                    //_BoxFillColor = Color.BlanchedAlmond;
                     colorToUse = Color.BlanchedAlmond;
-                    drawString = drawString.Replace("(A)", "");
                 }
-                int indexOfLineStart = drawString.IndexOf("(LINE");
-                if (indexOfLineStart > -1)
+
+                // ------------------------------------------
+                // Setup scripting actions
+                // ------------------------------------------
+                if (thisNodeDetails.scripting != "scripting" && thisNodeDetails.scripting != "")
                 {
-                    // determine destination
-                    string original = drawString.Substring(indexOfLineStart, drawString.Length - indexOfLineStart - 1);
-                    string[] bits = drawString.Split(new char[1] { ':' });
-                    // destwill be in bits[1];
-                    if (bits.Length >= 2)
+                    // parse script
+                    string[] commands = thisNodeDetails.scripting.Split(new char[1] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                    for (int i = 0; i<commands.Length;i++)
                     {
-
-
-                        lineToLine liner = new lineToLine();
-                        liner.source = bits[0].Substring(0, bits[0].Length - 5).Trim().ToLower();
-                        int idx = bits[1].IndexOf(")");
-                        liner.dest = bits[1].Substring(0, idx).Trim().ToLower();
-                        listOfLinesToAdd.Add(liner);
+                        // process each command
+                        // line(<me>,<you>);
+                        ProcessScripting(commands[i], thisNodeDetails.nodeID);
                     }
-                    //TODO: Is the best thing to do here is to store all the names and nodes and their RECT coordinates?
-                    // then search for them later?
-
-                    drawString = drawString.Substring(0, indexOfLineStart);
-
-
-
                 }
+               
+
+
+
+                
                 if (false)
                 {
                     if (mylevel < 2)
@@ -725,7 +751,11 @@ namespace TreeGenerator
 
             }
 
-
+            
+            // ------
+            // Write string
+            // ------
+            
 
             // Create string to draw.
             // because we escape apostophes out
@@ -740,8 +770,10 @@ namespace TreeGenerator
 
             // using this for more than ORG so got rid of the exception 9/27/2017
             gr.DrawString(drawString, drawFont, drawBrush, currentRectangle, drawFormat);
-
-
+            //TODO : how to measure propr
+            Rectangle secondRectangle = new Rectangle(currentRectangle.X + 10, currentRectangle.Y, currentRectangle.Width
+                , currentRectangle.Height);
+            gr.DrawString(secondString, drawFont, drawSecondFontBrush, currentRectangle, drawFormat);
 
             // draw secondary box 1 - Category - if necessary
             SolidBrush drawBrush_Category = new SolidBrush(Color.Black);
@@ -767,17 +799,20 @@ namespace TreeGenerator
             currentRectangle = oldRectangle;
             //draw connecting lines
             Regions thisRegion = new Regions();
-            thisRegion.name = drawString.ToLower();
+            thisRegion.name = thisNodeDetails.nodeID;// drawString.ToLower(); chganging to ID vs name
             thisRegion.Rect = currentRectangle;
             listOfBoxRegions.Add(thisRegion);
 
-            if (oNode.ParentNode.Name != "#document")
+            if (thisNodeDetails.nodetype != "orphan")
             {
-                //all but the top box should have lines growing out of their top
-                gr.DrawLine(boxPen, currentRectangle.Left + (_BoxWidth / 2),
-                                            currentRectangle.Top,
-                                            currentRectangle.Left + (_BoxWidth / 2),
-                                            currentRectangle.Top - (_VerticalSpace / 2));
+                if (oNode.ParentNode.Name != "#document")
+                {
+                    //all but the top box should have lines growing out of their top
+                    gr.DrawLine(boxPen, currentRectangle.Left + (_BoxWidth / 2),
+                                                currentRectangle.Top,
+                                                currentRectangle.Left + (_BoxWidth / 2),
+                                                currentRectangle.Top - (_VerticalSpace / 2));
+                }
             }
             if (oNode.HasChildNodes)
             {
@@ -851,6 +886,41 @@ namespace TreeGenerator
             {
                 DrawChart(childNode);
             }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="v"></param>
+        /// <param name="me"></param>
+        private void ProcessScripting(string v, string me)
+        {
+            int pos1 = v.IndexOf("(");
+            if (pos1 > 0)
+            {
+                string command = v.Substring(0, pos1);
+
+
+
+                ////
+                //  LINES
+                ///
+                if (command.ToLower().Trim() == "line")
+                {
+                    lineToLine liner = new lineToLine();
+                    liner.source = me; // a number id
+                    int pos2 = v.IndexOf(")");
+                    if (pos2 > pos1)
+                    {
+                        string dest = v.Substring(pos1+1, pos2 - pos1-1);
+                        liner.dest = dest;
+                    }
+                    
+                    listOfLinesToAdd.Add(liner);
+                }
+          
+               
+            }
+           
         }
 
         private Color GetColorByIDX(string personLookingAt, System.Collections.Hashtable hashy)
