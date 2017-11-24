@@ -356,10 +356,10 @@ namespace TreeGenerator
 
                 Pen extraPen = new Pen(format.secondline_color, format.secondline_thick);
                 // draw an extra line
-                gr.DrawLine(extraPen, source.Right,
+               DrawLine(extraPen, source.Right,
                                        source.Bottom,
                                        dest.Left,
-                                       dest.Top);
+                                       dest.Top, linetypes.goodarrow|linetypes.round);
 
 
               
@@ -395,6 +395,52 @@ namespace TreeGenerator
             return Result;
 
 
+        }
+
+        
+        [Flags]
+        enum linetypes
+        {
+            none = 0,
+            empty = 1,
+            goodarrow = 2,
+            round = 4,
+            dash = 8
+        }
+        /// <summary>
+        /// Wrapper so I can add options for arrowheads, etc, basedo n settings
+        /// </summary>
+        /// <param name="pen"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="x2"></param>
+        /// <param name="y2"></param>
+        private void DrawLine(Pen pen, int x, int y, int x2, int y2, linetypes style)
+        {
+            if (style.HasFlag(linetypes.goodarrow))
+            {
+                AdjustableArrowCap myArrow = new AdjustableArrowCap(6, 6, false);
+                pen.CustomEndCap = myArrow;
+            }
+            if (style.HasFlag(linetypes.round))
+            {
+                pen.StartCap = LineCap.RoundAnchor;
+            }
+            else
+            if(style.HasFlag(linetypes.dash))
+            {
+                pen.DashStyle = DashStyle.DashDotDot;
+            }
+
+            gr.DrawLine(pen, x,
+                                      y,
+                                       x2,
+                                       y2);
+
+            
+            // draw arrow head
+            //gr.DrawLine(pen, x2, y2, x2 + 8, y2 - 8);
+            //gr.DrawLine(pen, x2, y2, x2 - 8, y2 + 8);
         }
         /// <summary>
         /// the node holds the x,y in attributes

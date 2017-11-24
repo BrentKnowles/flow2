@@ -15,8 +15,9 @@ namespace TestTreeGenerator
 {
     public partial class Form1 : Form
     {
-        string helpText = "line(7); -- draws a line from me to box with id=7" + Environment.NewLine + 
-               "calloutbox(text,10,10,1); draws a smaller box with text in upper left of current box";
+        string helpText = "line(7); -- draws a line from me to box with id=7" + Environment.NewLine +
+               "calloutbox(text,10,10,1); draws a smaller box with text in upper left of current box" + Environment.NewLine +
+             "public int secondline_thick;        public Color secondline_color;        public Color secondaryFontColor;        public string secondaryFontName;        public int secondaryFontSize;        public Color actionboxcolor;        public Color calloutboxcolor;";
         public Form1()
         {
             InitializeComponent();
