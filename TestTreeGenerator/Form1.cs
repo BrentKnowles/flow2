@@ -8,11 +8,15 @@ using System.Windows.Forms;
 using TreeGenerator;
 using System.Xml;
 using System.Collections;
+using System.IO;
+
 
 namespace TestTreeGenerator
 {
     public partial class Form1 : Form
     {
+        string helpText = "line(7); -- draws a line from me to box with id=7" + Environment.NewLine + 
+               "calloutbox(text,10,10,1); draws a smaller box with text in upper left of current box";
         public Form1()
         {
             InitializeComponent();
@@ -51,7 +55,8 @@ namespace TestTreeGenerator
 
 
             dataGridView2.DataSource = dsview.Tables[0];
-
+           
+            helpBox.Text = helpText;
         }
         DataSet ds;
 
@@ -143,10 +148,17 @@ namespace TestTreeGenerator
             keys[0] = dt2.Columns[0];
             dt2.PrimaryKey = keys;
 
-
+            myTree.format.boxlinewidth = setuptablevalueint("boxlinewidth");
             myTree.format.secondline_color = setuptablevaluecolor("secondline_color");
             myTree.format.secondline_thick = setuptablevalueint("secondline_thick");
             myTree.format.secondaryFontColor = setuptablevaluecolor("secondaryFontColor");
+            myTree.format.secondaryFontName = setuptablevaluestring("secondaryFontName");
+            myTree.format.calloutboxcolor = setuptablevaluecolor("calloutboxcolor");
+
+            int size = setuptablevalueint("secondaryFontSize");
+            if (size > 0)
+                myTree.format.secondaryFontSize = size;
+            myTree.format.actionboxcolor = setuptablevaluecolor("actionboxcolor");
             button1.Font = new Font(dt2.DefaultView[d_fontname][2].ToString(), float.Parse(dt2.DefaultView[1][1].ToString()));
             myTree.FontName = button1.Font.Name;
         }
@@ -181,6 +193,23 @@ namespace TestTreeGenerator
                 object value2 = (value as DataRow)[1];
                 if (value2 != null)
                     r = ((int)value2);
+            }
+            return r;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="c"></param>
+        private string setuptablevaluestring(string c)
+        {
+            string r ="Times";
+            object value = dt2.Rows.Find(c);
+
+            if (value != null)
+            {
+                object value2 = (value as DataRow)[1];
+                if (value2 != null)
+                    r = (value2.ToString());
             }
             return r;
         }
@@ -439,12 +468,33 @@ namespace TestTreeGenerator
 
                    dt.AddTreeDataTableRow(nodeDetails.nodeID, nodeDetails.parentNodeID, nodeDetails.nodeDescription,
                        nodeDetails.nodeNote, nodeDetails.nodeCategory, nodeDetails.nodeSOD, nodeDetails.scripting, nodeDetails.nodetype);
+                    //
+                    // -1 is a control row
+                    // scripting column contains a stylesheet to load
+                    //
+                    if (dr[key].ToString()=="-1" && dr[scripting] != null)
+                    {
 
-
+                        string filename = dr[scripting].ToString();
+                        if (File.Exists(filename))
+                        {
+                            LoadStyle(filename);
+                            
+                        }
+                    }
                 }
             }
             return dt;
             
+        }
+
+        private void LoadStyle(string filename)
+        {
+            dsview.Tables[0].Clear();
+            dsview.ReadXml(filename);
+            dt2 = dsview.Tables[0];
+            Bindings();
+            labelStyleSheet.Text = filename;
         }
 
         //dt.AddTreeDataTableRow(title_id, supervisor, values[0].ToUpper(), "zzap","","","","");
@@ -778,6 +828,7 @@ namespace TestTreeGenerator
             {
                
                 ds.ReadXml(od.FileName);
+                datafilelabel.Text = od.FileName;
             }
         }
 
@@ -809,11 +860,8 @@ namespace TestTreeGenerator
             od.DefaultExt = "xml";
             if (od.ShowDialog() == DialogResult.OK)
             {
-
-                dsview.Tables[0].Clear();
-                dsview.ReadXml(od.FileName);
-                dt2 = dsview.Tables[0];
-                Bindings();
+                LoadStyle(od.FileName);
+               
               
             }
         }
@@ -840,6 +888,43 @@ namespace TestTreeGenerator
             Bindings();
             myTree.UpdateTable(GetBetterTreeData());
             ShowTree();
+        }
+
+        private void toolStripButton6_Click(object sender, EventArgs e)
+        {
+            if (File.Exists(labelStyleSheet.Text))
+            {
+                dsview.WriteXml(labelStyleSheet.Text);
+            }
+            
+        }
+
+        /// <summary>
+        /// copies the integer number 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (colorDialog1.ShowDialog() == DialogResult.OK)
+            {
+                int colorint = colorDialog1.Color.ToArgb();
+                Clipboard.SetText(colorint.ToString());
+            }
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void savedata_Click(object sender, EventArgs e)
+        {
+            if (File.Exists(datafilelabel.Text))
+            {
+                ds.WriteXml(datafilelabel.Text);
+            }
+            
         }
     }
 }

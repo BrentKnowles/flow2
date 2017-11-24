@@ -29,7 +29,7 @@ namespace TestTreeGenerator
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.tipColor = new System.Windows.Forms.ToolTip(this.components);
             this.lblFontColor = new System.Windows.Forms.Label();
@@ -80,6 +80,12 @@ namespace TestTreeGenerator
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
             this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
+            this.labelStyleSheet = new System.Windows.Forms.Label();
+            this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
+            this.button2 = new System.Windows.Forms.Button();
+            this.helpBox = new System.Windows.Forms.TextBox();
+            this.datafilelabel = new System.Windows.Forms.ToolStripLabel();
+            this.savedata = new System.Windows.Forms.ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)(this.nudBoxWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudBoxHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMargin)).BeginInit();
@@ -421,6 +427,8 @@ namespace TestTreeGenerator
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.helpBox);
+            this.panel1.Controls.Add(this.button2);
             this.panel1.Controls.Add(this.button1);
             this.panel1.Controls.Add(this.checkBoxOverridePerson);
             this.panel1.Controls.Add(this.checkBoxCategory);
@@ -460,7 +468,7 @@ namespace TestTreeGenerator
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(41, 928);
+            this.button1.Location = new System.Drawing.Point(12, 711);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 61);
             this.button1.TabIndex = 17;
@@ -505,7 +513,7 @@ namespace TestTreeGenerator
             // 
             // textBoxDuties
             // 
-            this.textBoxDuties.Location = new System.Drawing.Point(30, 817);
+            this.textBoxDuties.Location = new System.Drawing.Point(76, 652);
             this.textBoxDuties.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBoxDuties.Multiline = true;
             this.textBoxDuties.Name = "textBoxDuties";
@@ -515,7 +523,7 @@ namespace TestTreeGenerator
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(33, 775);
+            this.label10.Location = new System.Drawing.Point(33, 713);
             this.label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(69, 20);
@@ -534,7 +542,7 @@ namespace TestTreeGenerator
             // 
             // textBoxPeople
             // 
-            this.textBoxPeople.Location = new System.Drawing.Point(30, 708);
+            this.textBoxPeople.Location = new System.Drawing.Point(46, 625);
             this.textBoxPeople.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBoxPeople.Multiline = true;
             this.textBoxPeople.Name = "textBoxPeople";
@@ -620,14 +628,14 @@ namespace TestTreeGenerator
             // dataGridView1
             // 
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.Location = new System.Drawing.Point(3, 35);
             this.dataGridView1.MultiSelect = false;
@@ -642,7 +650,9 @@ namespace TestTreeGenerator
             this.toolStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton1,
-            this.toolStripButton2});
+            this.toolStripButton2,
+            this.datafilelabel,
+            this.savedata});
             this.toolStrip1.Location = new System.Drawing.Point(3, 3);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1537, 32);
@@ -671,6 +681,7 @@ namespace TestTreeGenerator
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.labelStyleSheet);
             this.tabPage3.Controls.Add(this.toolStrip2);
             this.tabPage3.Controls.Add(this.dataGridView2);
             this.tabPage3.Location = new System.Drawing.Point(4, 29);
@@ -687,7 +698,8 @@ namespace TestTreeGenerator
             this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton3,
             this.toolStripButton4,
-            this.toolStripButton5});
+            this.toolStripButton5,
+            this.toolStripButton6});
             this.toolStrip2.Location = new System.Drawing.Point(3, 3);
             this.toolStrip2.Name = "toolStrip2";
             this.toolStrip2.Size = new System.Drawing.Size(1537, 32);
@@ -700,8 +712,8 @@ namespace TestTreeGenerator
             this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
             this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Size = new System.Drawing.Size(53, 29);
-            this.toolStripButton3.Text = "Save";
+            this.toolStripButton3.Size = new System.Drawing.Size(78, 29);
+            this.toolStripButton3.Text = "Save As";
             this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
             // 
             // toolStripButton4
@@ -733,6 +745,60 @@ namespace TestTreeGenerator
             this.toolStripButton5.Size = new System.Drawing.Size(140, 29);
             this.toolStripButton5.Text = "Reload Formats";
             this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click);
+            // 
+            // labelStyleSheet
+            // 
+            this.labelStyleSheet.AutoSize = true;
+            this.labelStyleSheet.Location = new System.Drawing.Point(438, 3);
+            this.labelStyleSheet.Name = "labelStyleSheet";
+            this.labelStyleSheet.Size = new System.Drawing.Size(60, 20);
+            this.labelStyleSheet.TabIndex = 3;
+            this.labelStyleSheet.Text = "label12";
+            // 
+            // toolStripButton6
+            // 
+            this.toolStripButton6.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton6.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton6.Image")));
+            this.toolStripButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton6.Name = "toolStripButton6";
+            this.toolStripButton6.Size = new System.Drawing.Size(53, 29);
+            this.toolStripButton6.Text = "Save";
+            this.toolStripButton6.Click += new System.EventHandler(this.toolStripButton6_Click);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(23, 802);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(203, 41);
+            this.button2.TabIndex = 18;
+            this.button2.Text = "color to clipboard int";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // helpBox
+            // 
+            this.helpBox.Location = new System.Drawing.Point(30, 889);
+            this.helpBox.Multiline = true;
+            this.helpBox.Name = "helpBox";
+            this.helpBox.Size = new System.Drawing.Size(229, 135);
+            this.helpBox.TabIndex = 19;
+            this.helpBox.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
+            // 
+            // datafilelabel
+            // 
+            this.datafilelabel.Name = "datafilelabel";
+            this.datafilelabel.Size = new System.Drawing.Size(131, 29);
+            this.datafilelabel.Text = "toolStripLabel1";
+            // 
+            // savedata
+            // 
+            this.savedata.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.savedata.Image = ((System.Drawing.Image)(resources.GetObject("savedata.Image")));
+            this.savedata.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.savedata.Name = "savedata";
+            this.savedata.Size = new System.Drawing.Size(147, 29);
+            this.savedata.Text = "Save Current File";
+            this.savedata.Click += new System.EventHandler(this.savedata_Click);
             // 
             // Form1
             // 
@@ -825,6 +891,12 @@ namespace TestTreeGenerator
         private System.Windows.Forms.ToolStripButton toolStripButton4;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ToolStripButton toolStripButton5;
+        private System.Windows.Forms.Label labelStyleSheet;
+        private System.Windows.Forms.ToolStripButton toolStripButton6;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.TextBox helpBox;
+        private System.Windows.Forms.ToolStripLabel datafilelabel;
+        private System.Windows.Forms.ToolStripButton savedata;
     }
 }
 

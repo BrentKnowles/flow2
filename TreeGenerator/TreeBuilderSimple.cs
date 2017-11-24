@@ -134,11 +134,23 @@ namespace TreeGenerator
             public int secondline_thick;
             public Color secondline_color;
             public Color secondaryFontColor;
+            public string secondaryFontName;
+            public int secondaryFontSize;
+            public Color actionboxcolor;
+            public Color calloutboxcolor;
+
+            // this is how thick the border around a box is (separated from main line width)
+            public int boxlinewidth;
             public Format(int k)
             {
                 secondline_thick = 4;
                 secondline_color = Color.Green;
                 secondaryFontColor = Color.Pink;
+                secondaryFontName = "Courier New";
+                actionboxcolor = Color.Purple;
+                secondaryFontSize = 11;
+                boxlinewidth = 2;
+                calloutboxcolor = Color.Green;
             }
         }
         public Format format = new Format(1);
@@ -651,15 +663,21 @@ namespace TreeGenerator
             // Create font and brush.
             //
             Font drawFont = new Font(_FontName, _FontSize);
+            Font secondFont = new Font(format.secondaryFontName, format.secondaryFontSize);
+
             SolidBrush drawBrush = new SolidBrush(_FontColor);
             SolidBrush drawSecondFontBrush = new SolidBrush(format.secondaryFontColor);
             SolidBrush drawBrushError = new SolidBrush(Color.Red);
             Pen boxPen = new Pen(_LineColor, _LineWidth);
 
 
-            StringFormat drawFormat = new StringFormat();
-            drawFormat.Alignment = StringAlignment.Center;
-            drawFormat.LineAlignment = StringAlignment.Center;
+            StringFormat drawFormatheading = new StringFormat();
+            drawFormatheading.Alignment = StringAlignment.Center;
+            drawFormatheading.LineAlignment = StringAlignment.Near;
+
+            StringFormat drawFormatSecond = new StringFormat();
+            drawFormatSecond.Alignment = StringAlignment.Near;
+            drawFormatSecond.LineAlignment = StringAlignment.Far;
             //find children
 
             NodeDetails thisNodeDetails = listOfNodeStructures[Int32.Parse(oNode.Attributes["nodedata"].InnerText)];
@@ -685,10 +703,16 @@ namespace TreeGenerator
             Rectangle oldRectangle = currentRectangle;
            
             {
+                // ------------------------------------------
                 // Draw existing box
-                gr.DrawRectangle(boxPen, currentRectangle);
+                // ------------------------------------------
+                if (format.boxlinewidth > 0)
+                {
+                    Pen boxPen2 = new Pen(_LineColor, format.boxlinewidth);
+                    gr.DrawRectangle(boxPen2, currentRectangle);
+                }
 
-                // x and y area ctually screen locations 
+                // x and y are actually screen locations 
                 int mylevel = Int32.Parse(oNode.Attributes["level"].Value);
                 Color colorToUse = _BoxFillColor;
 
@@ -697,23 +721,10 @@ namespace TreeGenerator
                 // ------------------------------------------
                 if (thisNodeDetails.nodetype == "action")
                 {
-                    colorToUse = Color.BlanchedAlmond;
+                    colorToUse = format.actionboxcolor;
                 }
 
-                // ------------------------------------------
-                // Setup scripting actions
-                // ------------------------------------------
-                if (thisNodeDetails.scripting != "scripting" && thisNodeDetails.scripting != "")
-                {
-                    // parse script
-                    string[] commands = thisNodeDetails.scripting.Split(new char[1] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-                    for (int i = 0; i<commands.Length;i++)
-                    {
-                        // process each command
-                        // line(<me>,<you>);
-                        ProcessScripting(commands[i], thisNodeDetails.nodeID);
-                    }
-                }
+               
                
 
 
@@ -746,16 +757,18 @@ namespace TreeGenerator
                     }
                 }
 
+                // ------
+                // Fill the rectangle
+                // ------
                 gr.FillRectangle(new SolidBrush(colorToUse), currentRectangle);
 
 
             }
-
-            
+           
             // ------
             // Write string
             // ------
-            
+
 
             // Create string to draw.
             // because we escape apostophes out
@@ -769,29 +782,33 @@ namespace TreeGenerator
             // else
 
             // using this for more than ORG so got rid of the exception 9/27/2017
-            gr.DrawString(drawString, drawFont, drawBrush, currentRectangle, drawFormat);
+            gr.DrawString(drawString, drawFont, drawBrush, currentRectangle, drawFormatheading);
             //TODO : how to measure propr
             Rectangle secondRectangle = new Rectangle(currentRectangle.X + 10, currentRectangle.Y, currentRectangle.Width
                 , currentRectangle.Height);
-            gr.DrawString(secondString, drawFont, drawSecondFontBrush, currentRectangle, drawFormat);
+            gr.DrawString(secondString, secondFont, drawSecondFontBrush, currentRectangle, drawFormatSecond);
 
-            // draw secondary box 1 - Category - if necessary
-            SolidBrush drawBrush_Category = new SolidBrush(Color.Black);
-            SolidBrush fillBrush_Category = new SolidBrush(Color.White);
-            // draw secondary box 2 - Person - if necessary
-            Pen boxPen_CATEGORY = new Pen(Color.Blue, 2);
-            Font drawFont_CATEGORY = new Font("trebuchet", 8);
 
-            if (_showCategory)
+
+
+
+            // ------------------------------------------
+            // Setup scripting actions
+            // ------------------------------------------
+            if (thisNodeDetails.scripting != "scripting" && thisNodeDetails.scripting != "")
             {
-
-                Color toUse = Color.Black;
-
-                toUse = GetColorByIDX(drawStringCategory, catHash);
-                boxPen_CATEGORY = new Pen(toUse, 4);
-                currentRectangle = DrawSecondaryBox(new SolidBrush(toUse), fillBrush_Category, boxPen_CATEGORY, drawFont_CATEGORY, drawFormat, currentRectangle.Location.X,
-                    currentRectangle.Y, currentRectangle, drawStringCategory, new Size(70, 20));
+                // parse script
+                string[] commands = thisNodeDetails.scripting.Split(new char[1] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                for (int i = 0; i < commands.Length; i++)
+                {
+                    // process each command
+                    // line(<me>,<you>);
+                    ProcessScripting(commands[i], thisNodeDetails.nodeID, currentRectangle);
+                }
             }
+
+
+
 
 
 
@@ -834,54 +851,7 @@ namespace TreeGenerator
 
             }
 
-            ///
-            // -- Only shows if necessary
-            ///
-            if (_showOverridePerson)
-            {
-                drawBrush_Category = new SolidBrush(Color.White);
-                fillBrush_Category = new SolidBrush(Color.Green);
-                // draw secondary box 2 - Person - if necessary
-                boxPen_CATEGORY = new Pen(Color.Pink, 2);
-                drawFont_CATEGORY = new Font("trebuchet", 8);
-                string[] people_involved = drawStringSOD.Split(new char[1] { '*' });
-                string SOD = people_involved[0].ToString();
-                string position_owner = String.Empty;
-
-                if (people_involved.Length > 1)
-                    position_owner = people_involved[1].ToString();
-
-                string personLookingAt = "";
-                if (SOD != String.Empty) personLookingAt = SOD; else personLookingAt = position_owner;
-
-
-
-                //   if (personLookingAt != String.Empty)
-                {
-                    Color toUse = Color.Black;
-
-                    toUse = GetColorByIDX(personLookingAt, peopleHash);
-
-
-                    string positionLabel = position_owner;
-
-                    //
-                    // - Draw a Manager box above at a set location to indicate who is in or mostly in thi sposition currently
-                    //
-                    if (position_owner == String.Empty)
-                    {
-                        positionLabel = ">1";
-                    }
-
-                    currentRectangle = DrawSecondaryBox(drawBrush_Category, new SolidBrush(toUse), boxPen_CATEGORY, drawFont_CATEGORY, drawFormat,
-                        currentRectangle.Location.X - (currentRectangle.Width / 2), 15, currentRectangle, positionLabel.ToUpper(), new Size(70, 40));
-
-
-                    currentRectangle = DrawSecondaryBox(drawBrush_Category, new SolidBrush(toUse), boxPen_CATEGORY, drawFont_CATEGORY, drawFormat,
-                        currentRectangle.Location.X, currentRectangle.Y - (currentRectangle.Height / 2), currentRectangle, SOD, new Size(70, 20));
-
-                }
-            }
+          
             foreach (XmlNode childNode in oNode.ChildNodes)
             {
                 DrawChart(childNode);
@@ -892,33 +862,95 @@ namespace TreeGenerator
         /// </summary>
         /// <param name="v"></param>
         /// <param name="me"></param>
-        private void ProcessScripting(string v, string me)
+        private void ProcessScripting(string v, string me, Rectangle currentRectangle)
         {
             int pos1 = v.IndexOf("(");
             if (pos1 > 0)
             {
                 string command = v.Substring(0, pos1);
 
+                command = command.ToLower().Trim();
 
+                 List<string> myparams = new List<string>();
+
+           
+                int pos2 = v.IndexOf(")");
+                if (pos2 > pos1)
+                {
+                    string tmps = v.Substring(pos1 + 1, pos2 - pos1 - 1);
+
+                    // we have a closing bracket so let's look for comma delimitted parameters    
+                    string[] tmpa = tmps.Split(new char[1] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                    //if (tmpa.Length == 1)
+                   // {
+                   //     param1 = tmpa[0];
+                   // }
+                    if (tmpa.Length > 0)
+                    {
+                        foreach (string s in tmpa)
+                        {
+                            myparams.Add(s);
+                        }
+                        
+                    }
+                    
+                    //TODO a parameter array?
+                }
+                
 
                 ////
                 //  LINES
                 ///
-                if (command.ToLower().Trim() == "line")
+                if (command == "line")
                 {
                     lineToLine liner = new lineToLine();
                     liner.source = me; // a number id
-                    int pos2 = v.IndexOf(")");
-                    if (pos2 > pos1)
-                    {
-                        string dest = v.Substring(pos1+1, pos2 - pos1-1);
-                        liner.dest = dest;
-                    }
-                    
+
+                    liner.dest = myparams[0];
                     listOfLinesToAdd.Add(liner);
                 }
-          
-               
+                else
+                if (command == "calloutbox")
+                {
+                    // draw secondary box 1 - Category - if necessary
+                   // SolidBrush drawBrush_Category = new SolidBrush(Color.Black);
+                    SolidBrush fillBrush_Category = new SolidBrush(Color.White);
+                    // draw secondary box 2 - Person - if necessary
+                    Pen boxPen_CATEGORY = new Pen(format.secondaryFontColor, 2);
+                    Font drawFont_CATEGORY = new Font(format.secondaryFontName, format.secondaryFontSize);
+
+                    StringFormat drawFormatheading = new StringFormat();
+                    drawFormatheading.Alignment = StringAlignment.Center;
+                    drawFormatheading.LineAlignment = StringAlignment.Near;
+
+                    int nParam2 = 70;
+                    int nParam3 = 20;
+
+                    if (Int32.TryParse(myparams[1], out nParam2))
+                    {
+                       
+                    }
+                    if (Int32.TryParse(myparams[2], out nParam3))
+                    {
+
+                    }
+                    if (nParam2 == 0) nParam2 = 70;
+                    if (nParam3 == 0) nParam3 = 20;
+
+                    int myposition = 0;
+                    Int32.TryParse(myparams[3], out myposition);
+                    Color toUse = Color.Black;
+
+                        toUse = format.calloutboxcolor;// GetColorByIDX(drawStringCategory, catHash);
+                        boxPen_CATEGORY = new Pen(toUse, 4);
+                        //currentRectangle = 
+                        DrawSecondaryBox(new SolidBrush(toUse), fillBrush_Category, boxPen_CATEGORY, drawFont_CATEGORY, 
+                            drawFormatheading, currentRectangle.Location.X,
+                        currentRectangle.Y, currentRectangle, myparams[0], new Size(nParam2, nParam3), myposition);
+
+                }
+
+
             }
            
         }
@@ -948,11 +980,24 @@ namespace TreeGenerator
         /// <param name="currentRectangle"></param>
         /// <returns></returns>
         private Rectangle DrawSecondaryBox(SolidBrush drawBrush_Category, SolidBrush fillBrush_Category, Pen boxPen_CATEGORY, Font drawFont_CATEGORY,
-            StringFormat drawFormat, int Horiz, int Vertical, Rectangle currentRectangle, string name, Size newSize)
+            StringFormat drawFormat, int Horiz, int Vertical, Rectangle currentRectangle, string name, Size newSize, int position)
         {
             if (name == String.Empty) return currentRectangle;
 
-            Rectangle miniRect = new Rectangle(new Point(Horiz + currentRectangle.Width - 45, Vertical + currentRectangle.Height - 12), newSize);
+            // positions
+            // 0 = lower left (default)
+            // 1 =  upper right
+
+            Rectangle miniRect = new Rectangle(new Point(Horiz + currentRectangle.Width - newSize.Width, Vertical + currentRectangle.Height - (newSize.Height/2)), newSize);
+            if (position != 0)
+            {
+                if (position == 1)
+                {
+                    miniRect = new Rectangle(new Point(Horiz ,
+                             Vertical ),
+                            newSize);
+                }
+            }
             gr.DrawRectangle(boxPen_CATEGORY, miniRect);
             gr.FillRectangle(fillBrush_Category, miniRect);
             gr.DrawString(name, drawFont_CATEGORY, drawBrush_Category, miniRect, drawFormat);
