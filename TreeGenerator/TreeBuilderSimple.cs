@@ -54,12 +54,21 @@ namespace TreeGenerator
         // XML node ... instead I just put the index number into the xml node and grab the full struct details 
         List<NodeDetails> listOfNodeStructures = new List<NodeDetails>();
 
+       public enum Placement
+        {
+            Bottom,Top,Middle,Left,Right
+        }
+
         public struct lineToLine
         {
             public string source;
             public string dest;
             //i.e., goodarrow|dash
             public string linetype;
+            public Placement destx;
+            public Placement desty;
+            public Placement sourcex;
+            public Placement sourcey;
         }
         public struct Regions
         {
@@ -140,6 +149,7 @@ namespace TreeGenerator
             public int secondaryFontSize;
             public Color actionboxcolor;
             public Color calloutboxcolor;
+            public int xmarginextra; // move it a bit to the right
 
             // this is how thick the border around a box is (separated from main line width)
             public int boxlinewidth;
@@ -153,6 +163,7 @@ namespace TreeGenerator
                 secondaryFontSize = 11;
                 boxlinewidth = 2;
                 calloutboxcolor = Color.Green;
+                xmarginextra = 0;
             }
         }
         public Format format = new Format(1);
@@ -334,6 +345,7 @@ namespace TreeGenerator
             //OverlapExists();
             Bitmap bmp = new Bitmap(imgWidth, imgHeight);
             gr = Graphics.FromImage(bmp);
+            gr.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality; // seems same as AntiAlias
             gr.Clear(_BGColor);
             DrawChart(RootNode);
 
@@ -367,10 +379,35 @@ namespace TreeGenerator
 
                 Pen extraPen = new Pen(format.secondline_color, format.secondline_thick);
                 // draw an extra line
-               DrawLine(extraPen, source.Right,
-                                       source.Bottom,
-                                       dest.Left,
-                                       dest.Top, mylinetypetopass);
+                int destlinex = dest.Left;
+                int destliney = dest.Top;
+                int sourcelinex = dest.Right;
+                int sourceliney = dest.Bottom;
+                switch (liner.destx)
+                {
+                    case Placement.Right: destlinex = dest.Right; break;
+                    case Placement.Left: destlinex = dest.Left; break;
+                }
+                switch (liner.desty)
+                {
+                    case Placement.Top: destliney = dest.Top; break;
+                    case Placement.Bottom: destliney = dest.Bottom; break;
+                }
+                switch (liner.sourcex)
+                {
+                    case Placement.Right: sourcelinex = source.Right; break;
+                    case Placement.Left: sourcelinex = source.Left; break;
+                }
+                switch (liner.sourcey)
+                {
+                    case Placement.Top: sourceliney = source.Top; break;
+                    case Placement.Bottom: sourceliney = source.Bottom; break;
+                }
+
+                DrawLine(extraPen, sourcelinex,
+                                       sourceliney,
+                                       destlinex,
+                                       destliney, mylinetypetopass);
 
 
               
@@ -522,12 +559,15 @@ namespace TreeGenerator
             //after checking for nodes we can add the current node
             int StartX;
             int StartY;
+            int xmargin = format.xmarginextra;
+
             int[] ResultsArr = new int[] {GetXPosByOwnChildren(oNode),
                                     GetXPosByParentPreviousSibling(oNode),
                                     GetXPosByPreviousSibling(oNode),
-                                    _Margin };
+                                    _Margin,xmargin };
             Array.Sort(ResultsArr);
-            StartX = ResultsArr[3];
+
+            StartX = ResultsArr[4];
             StartY = (y * (_BoxHeight + _VerticalSpace)) + _Margin;
             int width = _BoxWidth;
             int height = _BoxHeight;
@@ -536,13 +576,14 @@ namespace TreeGenerator
             oNode.Attributes["Y"].InnerText = StartY.ToString();
 
             //update the image size
-            if (imgWidth < (StartX + width + _Margin))
+            if (imgWidth < (StartX + width + _Margin + xmargin))
             {
-                imgWidth = StartX + width + _Margin;
+                imgWidth = StartX + width + _Margin + xmargin;
             }
             if (imgHeight < (StartY + height + _Margin))
             {
-                imgHeight = StartY + height + _Margin;
+                  imgHeight = StartY + height + _Margin;
+               
             }
 
 
@@ -769,10 +810,11 @@ namespace TreeGenerator
 
             String drawStringCategory = oNode.Attributes["nodeCategory"].InnerText;
             String drawStringSOD = oNode.Attributes["nodeSOD"].InnerText;
-
+           // currentRectangle = new Rectangle(currentRectangle.X + format.xmarginextra, currentRectangle.Y,
+           //              currentRectangle.Width, currentRectangle.Height);
             // Adjust height of the boxes
             Rectangle oldRectangle = currentRectangle;
-           
+            
             {
                 // ------------------------------------------
                 // Draw existing box
@@ -780,6 +822,7 @@ namespace TreeGenerator
                 if (format.boxlinewidth > 0)
                 {
                     Pen boxPen2 = new Pen(_LineColor, format.boxlinewidth);
+                    
                     gr.DrawRectangle(boxPen2, currentRectangle);
                 }
 
@@ -835,7 +878,9 @@ namespace TreeGenerator
 
 
             }
+
            
+
             // ------
             // Write string
             // ------
@@ -960,7 +1005,7 @@ namespace TreeGenerator
                     {
                         foreach (string s in tmpa)
                         {
-                            myparams.Add(s);
+                            myparams.Add(s.Trim());
                         }
                         
                     }
@@ -983,6 +1028,36 @@ namespace TreeGenerator
                     if (myparams.Count > 1)
                     {
                         linetype = myparams[1];
+                    }
+                    liner.destx = Placement.Right;
+                    liner.desty = Placement.Bottom;
+                    if (myparams.Count > 5)
+                    {
+                        Placement thex = 0;
+                        Placement they = 0;
+                        for (int i = 0; i < 2; i++)
+                        {
+                            if (myparams[2+(i*2)] == "right") thex = Placement.Right;
+                            if (myparams[2 + (i * 2)] == "left") thex = Placement.Left;
+                            if (myparams[2 + (i * 2)] == "middle") thex = Placement.Middle;
+                            if (myparams[3 + (i * 2)] == "middle") they = Placement.Middle;
+                            if (myparams[3 + (i * 2)] == "top") they = Placement.Top;
+                            if (myparams[3 + (i * 2)] == "bottom") they = Placement.Bottom;
+
+                            if (i == 0)
+                            {
+                                liner.sourcex = thex;
+                                liner.sourcey = they;
+                            }
+                            if (i == 1)
+                            {
+                                liner.destx = thex;
+                                liner.desty = they;
+                            }
+                        }
+                       
+                        
+
                     }
                     liner.linetype = linetype;
                     listOfLinesToAdd.Add(liner);
@@ -1027,6 +1102,42 @@ namespace TreeGenerator
                             drawFormatheading, currentRectangle.Location.X,
                         currentRectangle.Y, currentRectangle, myparams[0], new Size(nParam2, nParam3), myposition);
 
+
+                }
+                else if (command == "addtomarginleft")
+                {
+                    if (myparams.Count >0)
+                    {
+                        Int32.TryParse(myparams[0], out format.xmarginextra);
+                    }
+                }
+                else if (command == "image")
+                {
+                    if (myparams.Count > 5)
+                    {
+                        // alpha
+                        string salpha = myparams[5];
+                        float alpha = 1;
+                        float.TryParse(salpha, out alpha);
+                        ColorMatrix cm = new ColorMatrix();
+                        cm.Matrix33 = 0.25f;
+                        ImageAttributes ia = new ImageAttributes();
+                        ia.SetColorMatrix(cm);
+                        Image inn=null;
+                        int x,y,x1,y1 = 0;
+                        Int32.TryParse(myparams[1],out x);
+                        Int32.TryParse(myparams[2], out y);
+                        Int32.TryParse(myparams[3], out x1);
+                        Int32.TryParse(myparams[4], out y1);
+
+
+                        string file = myparams[0];
+                        if (File.Exists(file) == true)
+                            inn = Image.FromFile(file);
+
+                        if (inn!=null)
+                            gr.DrawImage(inn, new Rectangle(x, y, x1, y1), 0, 0, inn.Width, inn.Height, GraphicsUnit.Pixel, ia);
+                    }
                 }
 
 

@@ -18,9 +18,9 @@ namespace TestTreeGenerator
         string helpText = "line(7); -- draws a line from me to box with id=7" + Environment.NewLine +
                "calloutbox(text,10,10,1); draws a smaller box with text in upper left of current box" + Environment.NewLine +
              "public int secondline_thick;        public Color secondline_color;        public Color secondaryFontColor;        public string secondaryFontName;        public int secondaryFontSize;        public Color actionboxcolor;        public Color calloutboxcolor;";
-        public Form1()
+        void setupdataset()
         {
-            InitializeComponent();
+            if (dataGridView1.DataSource != null) dataGridView1.DataSource = null;
             ds = new DataSet();
             DataTable table = ds.Tables.Add("newtable");
             table.Columns.Add("key");
@@ -31,6 +31,12 @@ namespace TestTreeGenerator
             table.Columns.Add("nodeType");
             table.NewRow();
             dataGridView1.DataSource = ds.Tables[0];
+        }
+        public Form1()
+        {
+            InitializeComponent();
+            setupdataset();
+          
 
 
 
@@ -155,7 +161,7 @@ namespace TestTreeGenerator
             myTree.format.secondaryFontColor = setuptablevaluecolor("secondaryFontColor");
             myTree.format.secondaryFontName = setuptablevaluestring("secondaryFontName");
             myTree.format.calloutboxcolor = setuptablevaluecolor("calloutboxcolor");
-
+           // myTree.format.xmarginextra = setuptablevalueint("xmarginextra"); Set only via scripting
             int size = setuptablevalueint("secondaryFontSize");
             if (size > 0)
                 myTree.format.secondaryFontSize = size;
@@ -465,10 +471,16 @@ namespace TestTreeGenerator
                         nodeDetails.scripting = dr[scripting].ToString();
                     if (dr[ntype] != null)
                         nodeDetails.nodetype = dr[ntype].ToString();
-                    
 
-                   dt.AddTreeDataTableRow(nodeDetails.nodeID, nodeDetails.parentNodeID, nodeDetails.nodeDescription,
-                       nodeDetails.nodeNote, nodeDetails.nodeCategory, nodeDetails.nodeSOD, nodeDetails.scripting, nodeDetails.nodetype);
+                    try
+                    {
+                        dt.AddTreeDataTableRow(nodeDetails.nodeID, nodeDetails.parentNodeID, nodeDetails.nodeDescription,
+                            nodeDetails.nodeNote, nodeDetails.nodeCategory, nodeDetails.nodeSOD, nodeDetails.scripting, nodeDetails.nodetype);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Data may be lost, error with unique key.");
+                    }
                     //
                     // -1 is a control row
                     // scripting column contains a stylesheet to load
@@ -795,7 +807,14 @@ namespace TestTreeGenerator
             // myTree.SetSchema_TaskChart();
             //myTree.myMode = TreeBuilderSimple.mode.DUTY;
             //ShowTree();
-            picTree.Image.Save(@"e:\1.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
+            SaveFileDialog sd = new SaveFileDialog();
+            sd.DefaultExt = "png";
+           
+            if (sd.ShowDialog() == DialogResult.OK)
+            {
+                picTree.Image.Save(sd.FileName, System.Drawing.Imaging.ImageFormat.Png);
+            }
+            
         }
 
         private void checkBoxCategory_CheckedChanged(object sender, EventArgs e)
@@ -818,9 +837,14 @@ namespace TestTreeGenerator
             if (sd.ShowDialog() == DialogResult.OK)
             {
                 ds.WriteXml(sd.FileName);
+                datafilelabel.Text = sd.FileName;
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
             OpenFileDialog od = new OpenFileDialog();
@@ -828,9 +852,12 @@ namespace TestTreeGenerator
             
             if (od.ShowDialog() == DialogResult.OK)
             {
-               
+                setupdataset();
                 ds.ReadXml(od.FileName);
                 datafilelabel.Text = od.FileName;
+
+                myTree.UpdateTable(GetBetterTreeData());
+                ShowTree();
             }
         }
 
