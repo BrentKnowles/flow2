@@ -88,7 +88,7 @@ namespace TestTreeGenerator
                 picTree.Image = Image.FromStream(stream);
             else
                 MessageBox.Show("null stream");
-            //picTree.Image.Save(@"d:\temp\1.jpg",System.Drawing.Imaging.ImageFormat.Jpeg);
+           
 
 
            
@@ -791,10 +791,11 @@ namespace TestTreeGenerator
 
         private void buttonDuties_Click(object sender, EventArgs e)
         {
-            myTree = new TreeBuilderSimple(GetTreeData(TreeBuilder.mode.DUTY));
-            myTree.SetSchema_TaskChart();
-            myTree.myMode = TreeBuilderSimple.mode.DUTY;
-            ShowTree();
+            //  myTree = new TreeBuilderSimple(GetTreeData(TreeBuilder.mode.DUTY));
+            // myTree.SetSchema_TaskChart();
+            //myTree.myMode = TreeBuilderSimple.mode.DUTY;
+            //ShowTree();
+            picTree.Image.Save(@"e:\1.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
         }
 
         private void checkBoxCategory_CheckedChanged(object sender, EventArgs e)

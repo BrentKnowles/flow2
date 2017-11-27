@@ -58,6 +58,8 @@ namespace TreeGenerator
         {
             public string source;
             public string dest;
+            //i.e., goodarrow|dash
+            public string linetype;
         }
         public struct Regions
         {
@@ -352,14 +354,23 @@ namespace TreeGenerator
                     }
                 }
 
-
+                //build linetype based on strings
+               // string[] ltypes = liner.linetype.Split(new char[1] {',' }, StringSplitOptions.RemoveEmptyEntries);
+                linetypes mylinetypetopass = linetypes.dash;
+                string s = liner.linetype.Replace("|", ", "); // need to convert | into , for the .parse
+                mylinetypetopass = (linetypes) Enum.Parse(typeof(linetypes),s);
+               // foreach (string s in ltypes)
+              //  {
+                //    if (s == "goodarrow")
+              //          mylinetypetopass = linetypes.goodarrow;
+              //  }
 
                 Pen extraPen = new Pen(format.secondline_color, format.secondline_thick);
                 // draw an extra line
                DrawLine(extraPen, source.Right,
                                        source.Bottom,
                                        dest.Left,
-                                       dest.Top, linetypes.goodarrow|linetypes.round);
+                                       dest.Top, mylinetypetopass);
 
 
               
@@ -405,7 +416,8 @@ namespace TreeGenerator
             empty = 1,
             goodarrow = 2,
             round = 4,
-            dash = 8
+            dash = 8,
+            twocolor =16
         }
         /// <summary>
         /// Wrapper so I can add options for arrowheads, etc, basedo n settings
@@ -419,23 +431,36 @@ namespace TreeGenerator
         {
             if (style.HasFlag(linetypes.goodarrow))
             {
-                AdjustableArrowCap myArrow = new AdjustableArrowCap(6, 6, false);
+                AdjustableArrowCap myArrow = new AdjustableArrowCap(5, 5, false);
                 pen.CustomEndCap = myArrow;
             }
             if (style.HasFlag(linetypes.round))
             {
                 pen.StartCap = LineCap.RoundAnchor;
             }
-            else
+            if (style.HasFlag(linetypes.twocolor))
+            {
+                AdjustableArrowCap myArrow = new AdjustableArrowCap(2,2, false);
+                Pen p2 = new Pen(Color.Black);
+                p2.StartCap = LineCap.RoundAnchor;
+                
+                p2.CustomEndCap = myArrow;
+               
+                p2.Width = pen.Width*3;
+
+                int ytilt = 0;
+                int xtilt = 0;
+                if (x > x2) xtilt = xtilt * -1;
+                if (y < y2) ytilt = ytilt * -1;
+                gr.DrawLine(p2, x, y, x2 + xtilt, y2 + ytilt);
+
+            }
             if(style.HasFlag(linetypes.dash))
             {
                 pen.DashStyle = DashStyle.DashDotDot;
             }
 
-            gr.DrawLine(pen, x,
-                                      y,
-                                       x2,
-                                       y2);
+            gr.DrawLine(pen, x,   y,    x2,  y2);
 
             
             // draw arrow head
@@ -953,6 +978,13 @@ namespace TreeGenerator
                     liner.source = me; // a number id
 
                     liner.dest = myparams[0];
+                    string linetype = linetypes.goodarrow.ToString();
+
+                    if (myparams.Count > 1)
+                    {
+                        linetype = myparams[1];
+                    }
+                    liner.linetype = linetype;
                     listOfLinesToAdd.Add(liner);
                 }
                 else
@@ -984,7 +1016,8 @@ namespace TreeGenerator
                     if (nParam3 == 0) nParam3 = 20;
 
                     int myposition = 0;
-                    Int32.TryParse(myparams[3], out myposition);
+                    if (myparams.Count >= 4)
+                        Int32.TryParse(myparams[3], out myposition);
                     Color toUse = Color.Black;
 
                         toUse = format.calloutboxcolor;// GetColorByIDX(drawStringCategory, catHash);

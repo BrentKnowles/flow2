@@ -1,0 +1,151 @@
+<?xml version="1.0" standalone="yes"?>
+<NewDataSet>
+  <newtable>
+    <key>-1</key>
+    <parentkey>0</parentkey>
+    <nodeDescription>a</nodeDescription>
+    <nodeNote>b</nodeNote>
+    <nodeScripting>E:\visual studio projects\C#\flow2\data\style\writing.xml</nodeScripting>
+    <nodeType>d</nodeType>
+  </newtable>
+  <newtable>
+    <key>1</key>
+    <parentkey>0</parentkey>
+    <nodeDescription>start</nodeDescription>
+  </newtable>
+  <newtable>
+    <key>2</key>
+    <parentkey>6</parentkey>
+    <nodeDescription>rough draft</nodeDescription>
+  </newtable>
+  <newtable>
+    <key>3</key>
+    <parentkey>2</parentkey>
+    <nodeDescription>edit</nodeDescription>
+  </newtable>
+  <newtable>
+    <key>4</key>
+    <parentkey>3</parentkey>
+    <nodeDescription>friend review</nodeDescription>
+  </newtable>
+  <newtable>
+    <key>5</key>
+    <parentkey>4</parentkey>
+    <nodeDescription>complete writing</nodeDescription>
+    <nodeType>action</nodeType>
+  </newtable>
+  <newtable>
+    <key>6</key>
+    <parentkey>1</parentkey>
+    <nodeDescription>writing</nodeDescription>
+  </newtable>
+  <newtable>
+    <key>7</key>
+    <parentkey>1</parentkey>
+    <nodeDescription>traditional publish</nodeDescription>
+  </newtable>
+  <newtable>
+    <key>8</key>
+    <parentkey>1</parentkey>
+    <nodeDescription>kdp ebook</nodeDescription>
+  </newtable>
+  <newtable>
+    <key>9</key>
+    <parentkey>8</parentkey>
+    <nodeDescription>cover image</nodeDescription>
+  </newtable>
+  <newtable>
+    <key>10</key>
+    <parentkey>9</parentkey>
+    <nodeDescription>web isbn</nodeDescription>
+  </newtable>
+  <newtable>
+    <key>11</key>
+    <parentkey>13</parentkey>
+    <nodeDescription>-&gt; Smashwords too</nodeDescription>
+  </newtable>
+  <newtable>
+    <key>12</key>
+    <parentkey>11</parentkey>
+    <nodeDescription>-&gt; Gumroad too</nodeDescription>
+  </newtable>
+  <newtable>
+    <key>13</key>
+    <parentkey>26</parentkey>
+    <nodeDescription>publish</nodeDescription>
+    <nodeType>action</nodeType>
+  </newtable>
+  <newtable>
+    <key>25</key>
+    <parentkey>0</parentkey>
+  </newtable>
+  <newtable>
+    <key>15</key>
+    <parentkey>1</parentkey>
+    <nodeDescription>kdp print</nodeDescription>
+  </newtable>
+  <newtable>
+    <key>16</key>
+    <parentkey>13</parentkey>
+    <nodeDescription>social media push</nodeDescription>
+  </newtable>
+  <newtable>
+    <key>17</key>
+    <parentkey>15</parentkey>
+    <nodeDescription>publish</nodeDescription>
+    <nodeType>action</nodeType>
+  </newtable>
+  <newtable>
+    <key>18</key>
+    <parentkey>17</parentkey>
+    <nodeDescription>social media</nodeDescription>
+    <nodeScripting>line(16,goodarrow|twocolor|round);</nodeScripting>
+  </newtable>
+  <newtable>
+    <key>19</key>
+    <parentkey>16</parentkey>
+    <nodeDescription>blog</nodeDescription>
+  </newtable>
+  <newtable>
+    <key>20</key>
+    <parentkey>19</parentkey>
+    <nodeDescription>tweet</nodeDescription>
+  </newtable>
+  <newtable>
+    <key>21</key>
+    <parentkey>20</parentkey>
+    <nodeDescription>empire</nodeDescription>
+  </newtable>
+  <newtable>
+    <key>22</key>
+    <parentkey>21</parentkey>
+    <nodeDescription>facebook</nodeDescription>
+  </newtable>
+  <newtable>
+    <key>23</key>
+    <parentkey>1</parentkey>
+    <nodeDescription>Promotions</nodeDescription>
+  </newtable>
+  <newtable>
+    <key>24</key>
+    <parentkey>23</parentkey>
+    <nodeDescription>date of last run</nodeDescription>
+    <nodeScripting>calloutbox(*,100,100,0);</nodeScripting>
+  </newtable>
+  <newtable>
+    <key>26</key>
+    <parentkey>10</parentkey>
+    <nodeDescription>review copies</nodeDescription>
+  </newtable>
+  <newtable>
+    <key>27</key>
+    <parentkey>1</parentkey>
+    <nodeDescription>Create Space Version</nodeDescription>
+  </newtable>
+  <newtable>
+    <key>28</key>
+    <parentkey>1</parentkey>
+    <nodeDescription>Requires Edits</nodeDescription>
+    <nodeScripting>calloutbox(*,100,100,0);</nodeScripting>
+  </newtable>
+</NewDataSet>
