@@ -29,7 +29,7 @@ namespace TestTreeGenerator
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.tipColor = new System.Windows.Forms.ToolTip(this.components);
             this.lblFontColor = new System.Windows.Forms.Label();
@@ -55,6 +55,8 @@ namespace TestTreeGenerator
             this.btnShowChart = new System.Windows.Forms.Button();
             this.lblNodeText = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.helpBox = new System.Windows.Forms.TextBox();
+            this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.checkBoxOverridePerson = new System.Windows.Forms.CheckBox();
             this.checkBoxCategory = new System.Windows.Forms.CheckBox();
@@ -74,18 +76,16 @@ namespace TestTreeGenerator
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+            this.datafilelabel = new System.Windows.Forms.ToolStripLabel();
+            this.savedata = new System.Windows.Forms.ToolStripButton();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.labelStyleSheet = new System.Windows.Forms.Label();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
-            this.dataGridView2 = new System.Windows.Forms.DataGridView();
             this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
-            this.labelStyleSheet = new System.Windows.Forms.Label();
             this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
-            this.button2 = new System.Windows.Forms.Button();
-            this.helpBox = new System.Windows.Forms.TextBox();
-            this.datafilelabel = new System.Windows.Forms.ToolStripLabel();
-            this.savedata = new System.Windows.Forms.ToolStripButton();
+            this.dataGridView2 = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.nudBoxWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudBoxHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMargin)).BeginInit();
@@ -466,6 +466,25 @@ namespace TestTreeGenerator
             this.panel1.Size = new System.Drawing.Size(308, 1081);
             this.panel1.TabIndex = 8;
             // 
+            // helpBox
+            // 
+            this.helpBox.Location = new System.Drawing.Point(30, 889);
+            this.helpBox.Multiline = true;
+            this.helpBox.Name = "helpBox";
+            this.helpBox.Size = new System.Drawing.Size(229, 135);
+            this.helpBox.TabIndex = 19;
+            this.helpBox.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(23, 802);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(203, 41);
+            this.button2.TabIndex = 18;
+            this.button2.Text = "color to clipboard int";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(12, 711);
@@ -628,14 +647,14 @@ namespace TestTreeGenerator
             // dataGridView1
             // 
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle1;
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.Location = new System.Drawing.Point(3, 35);
             this.dataGridView1.MultiSelect = false;
@@ -679,6 +698,22 @@ namespace TestTreeGenerator
             this.toolStripButton2.Text = "Load";
             this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
             // 
+            // datafilelabel
+            // 
+            this.datafilelabel.Name = "datafilelabel";
+            this.datafilelabel.Size = new System.Drawing.Size(131, 29);
+            this.datafilelabel.Text = "toolStripLabel1";
+            // 
+            // savedata
+            // 
+            this.savedata.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.savedata.Image = ((System.Drawing.Image)(resources.GetObject("savedata.Image")));
+            this.savedata.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.savedata.Name = "savedata";
+            this.savedata.Size = new System.Drawing.Size(147, 29);
+            this.savedata.Text = "Save Current File";
+            this.savedata.Click += new System.EventHandler(this.savedata_Click);
+            // 
             // tabPage3
             // 
             this.tabPage3.Controls.Add(this.labelStyleSheet);
@@ -691,6 +726,15 @@ namespace TestTreeGenerator
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Look and Feel Data";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // labelStyleSheet
+            // 
+            this.labelStyleSheet.AutoSize = true;
+            this.labelStyleSheet.Location = new System.Drawing.Point(438, 3);
+            this.labelStyleSheet.Name = "labelStyleSheet";
+            this.labelStyleSheet.Size = new System.Drawing.Size(60, 20);
+            this.labelStyleSheet.TabIndex = 3;
+            this.labelStyleSheet.Text = "label12";
             // 
             // toolStrip2
             // 
@@ -726,16 +770,6 @@ namespace TestTreeGenerator
             this.toolStripButton4.Text = "Load";
             this.toolStripButton4.Click += new System.EventHandler(this.toolStripButton4_Click);
             // 
-            // dataGridView2
-            // 
-            this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridView2.Location = new System.Drawing.Point(3, 3);
-            this.dataGridView2.Name = "dataGridView2";
-            this.dataGridView2.RowTemplate.Height = 28;
-            this.dataGridView2.Size = new System.Drawing.Size(1537, 1042);
-            this.dataGridView2.TabIndex = 0;
-            // 
             // toolStripButton5
             // 
             this.toolStripButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -745,15 +779,6 @@ namespace TestTreeGenerator
             this.toolStripButton5.Size = new System.Drawing.Size(140, 29);
             this.toolStripButton5.Text = "Reload Formats";
             this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click);
-            // 
-            // labelStyleSheet
-            // 
-            this.labelStyleSheet.AutoSize = true;
-            this.labelStyleSheet.Location = new System.Drawing.Point(438, 3);
-            this.labelStyleSheet.Name = "labelStyleSheet";
-            this.labelStyleSheet.Size = new System.Drawing.Size(60, 20);
-            this.labelStyleSheet.TabIndex = 3;
-            this.labelStyleSheet.Text = "label12";
             // 
             // toolStripButton6
             // 
@@ -765,40 +790,15 @@ namespace TestTreeGenerator
             this.toolStripButton6.Text = "Save";
             this.toolStripButton6.Click += new System.EventHandler(this.toolStripButton6_Click);
             // 
-            // button2
+            // dataGridView2
             // 
-            this.button2.Location = new System.Drawing.Point(23, 802);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(203, 41);
-            this.button2.TabIndex = 18;
-            this.button2.Text = "color to clipboard int";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // helpBox
-            // 
-            this.helpBox.Location = new System.Drawing.Point(30, 889);
-            this.helpBox.Multiline = true;
-            this.helpBox.Name = "helpBox";
-            this.helpBox.Size = new System.Drawing.Size(229, 135);
-            this.helpBox.TabIndex = 19;
-            this.helpBox.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
-            // 
-            // datafilelabel
-            // 
-            this.datafilelabel.Name = "datafilelabel";
-            this.datafilelabel.Size = new System.Drawing.Size(131, 29);
-            this.datafilelabel.Text = "toolStripLabel1";
-            // 
-            // savedata
-            // 
-            this.savedata.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.savedata.Image = ((System.Drawing.Image)(resources.GetObject("savedata.Image")));
-            this.savedata.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.savedata.Name = "savedata";
-            this.savedata.Size = new System.Drawing.Size(147, 29);
-            this.savedata.Text = "Save Current File";
-            this.savedata.Click += new System.EventHandler(this.savedata_Click);
+            this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridView2.Location = new System.Drawing.Point(3, 3);
+            this.dataGridView2.Name = "dataGridView2";
+            this.dataGridView2.RowTemplate.Height = 28;
+            this.dataGridView2.Size = new System.Drawing.Size(1537, 1042);
+            this.dataGridView2.TabIndex = 0;
             // 
             // Form1
             // 

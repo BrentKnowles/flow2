@@ -137,6 +137,16 @@ namespace TreeGenerator
 
 
         }
+        public struct BoxDetail
+        {
+            public Color boxfillcolor;
+            public int boxthickness;
+            public BoxDetail(int i)
+            {
+                boxfillcolor = Color.Purple;
+                boxthickness = 6;
+            }
+        }
         /// <summary>
         /// A structure to hold format details, so they are more easily "found"
         /// </summary>
@@ -147,7 +157,8 @@ namespace TreeGenerator
             public Color secondaryFontColor;
             public string secondaryFontName;
             public int secondaryFontSize;
-            public Color actionboxcolor;
+            public BoxDetail actionbox;
+            public BoxDetail outcomebox;
             public Color calloutboxcolor;
             public int xmarginextra; // move it a bit to the right
 
@@ -159,7 +170,8 @@ namespace TreeGenerator
                 secondline_color = Color.Green;
                 secondaryFontColor = Color.Pink;
                 secondaryFontName = "Courier New";
-                actionboxcolor = Color.Purple;
+                actionbox = new BoxDetail(1);
+                outcomebox = new BoxDetail(1);
                 secondaryFontSize = 11;
                 boxlinewidth = 2;
                 calloutboxcolor = Color.Green;
@@ -330,6 +342,8 @@ namespace TreeGenerator
                 nodeDetails.nodeNote = ((TreeData.TreeDataTableRow)dtTree.Select(string.Format("nodeID='{0}'", StartFromNodeID))[0]).nodeNote;
                 nodeDetails.nodeCategory = ((TreeData.TreeDataTableRow)dtTree.Select(string.Format("nodeID='{0}'", StartFromNodeID))[0]).nodeCategory;
                 nodeDetails.nodeSOD = ((TreeData.TreeDataTableRow)dtTree.Select(string.Format("nodeID='{0}'", StartFromNodeID))[0]).nodeSOD;
+                nodeDetails.scripting = ((TreeData.TreeDataTableRow)dtTree.Select(string.Format("nodeID='{0}'", StartFromNodeID))[0]).scripting;
+                nodeDetails.nodetype = ((TreeData.TreeDataTableRow)dtTree.Select(string.Format("nodeID='{0}'", StartFromNodeID))[0]).nodetype                   ;
             }
             listOfNodeStructures.Clear();
 
@@ -383,25 +397,30 @@ namespace TreeGenerator
                 int destliney = dest.Top;
                 int sourcelinex = dest.Right;
                 int sourceliney = dest.Bottom;
+                
                 switch (liner.destx)
                 {
                     case Placement.Right: destlinex = dest.Right; break;
                     case Placement.Left: destlinex = dest.Left; break;
+                    case Placement.Middle: destlinex = ((dest.Right - dest.Left) / 2) + dest.Left ; break;
                 }
                 switch (liner.desty)
                 {
                     case Placement.Top: destliney = dest.Top; break;
                     case Placement.Bottom: destliney = dest.Bottom; break;
+                    case Placement.Middle: destliney = ((dest.Bottom - dest.Top) / 2) + dest.Top;  break;
                 }
                 switch (liner.sourcex)
                 {
                     case Placement.Right: sourcelinex = source.Right; break;
                     case Placement.Left: sourcelinex = source.Left; break;
+                    case Placement.Middle: sourcelinex = ((source.Right - source.Left)/2)+source.Left; break;
                 }
                 switch (liner.sourcey)
                 {
                     case Placement.Top: sourceliney = source.Top; break;
                     case Placement.Bottom: sourceliney = source.Bottom; break;
+                    case Placement.Middle: sourceliney = ((source.Bottom - source.Top) / 2) + source.Top;  break;
                 }
 
                 DrawLine(extraPen, sourcelinex,
@@ -775,6 +794,8 @@ namespace TreeGenerator
             // Create font and brush.
             //
             Font drawFont = new Font(_FontName, _FontSize);
+        
+            
             Font secondFont = new Font(format.secondaryFontName, format.secondaryFontSize);
 
             SolidBrush drawBrush = new SolidBrush(_FontColor);
@@ -786,6 +807,7 @@ namespace TreeGenerator
             StringFormat drawFormatheading = new StringFormat();
             drawFormatheading.Alignment = StringAlignment.Center;
             drawFormatheading.LineAlignment = StringAlignment.Near;
+            
 
             StringFormat drawFormatSecond = new StringFormat();
             drawFormatSecond.Alignment = StringAlignment.Near;
@@ -816,27 +838,36 @@ namespace TreeGenerator
             Rectangle oldRectangle = currentRectangle;
             
             {
+
+                Color colorToUse = _BoxFillColor;
+                int boxSizeTouse = format.boxlinewidth;
+                // ------------------------------------------
+                // Do something with "type"
+                // ------------------------------------------
+                if (thisNodeDetails.nodetype == "action")
+                {
+                    colorToUse = format.actionbox.boxfillcolor;
+                    boxSizeTouse = format.actionbox.boxthickness;
+                }
+                if (thisNodeDetails.nodetype == "outcome")
+                {
+                    colorToUse = format.outcomebox.boxfillcolor;
+                    boxSizeTouse = format.outcomebox.boxthickness;
+                }
+
                 // ------------------------------------------
                 // Draw existing box
                 // ------------------------------------------
-                if (format.boxlinewidth > 0)
+                if (boxSizeTouse > 0)
                 {
-                    Pen boxPen2 = new Pen(_LineColor, format.boxlinewidth);
+                    Pen boxPen2 = new Pen(_LineColor, boxSizeTouse);
                     
                     gr.DrawRectangle(boxPen2, currentRectangle);
                 }
 
                 // x and y are actually screen locations 
                 int mylevel = Int32.Parse(oNode.Attributes["level"].Value);
-                Color colorToUse = _BoxFillColor;
-
-                // ------------------------------------------
-                // Do something with "type"
-                // ------------------------------------------
-                if (thisNodeDetails.nodetype == "action")
-                {
-                    colorToUse = format.actionboxcolor;
-                }
+                
 
                
                
@@ -896,9 +927,8 @@ namespace TreeGenerator
             //     gr.DrawString(drawString, drawFont, drawBrushError, currentRectangle, drawFormat);
             // }
             // else
-
+            drawTheString(drawString, drawFont, drawBrush, currentRectangle, drawFormatheading);
             // using this for more than ORG so got rid of the exception 9/27/2017
-            gr.DrawString(drawString, drawFont, drawBrush, currentRectangle, drawFormatheading);
             //TODO : how to measure propr
             Rectangle secondRectangle = new Rectangle(currentRectangle.X + 10, currentRectangle.Y, currentRectangle.Width
                 , currentRectangle.Height);
@@ -973,6 +1003,34 @@ namespace TreeGenerator
                 DrawChart(childNode);
             }
         }
+
+        /// <summary>
+        /// Creating a wrapper because I want to draw each line as a separate line?
+        /// </summary>
+        /// <param name="drawString"></param>
+        /// <param name="drawFont"></param>
+        /// <param name="drawBrush"></param>
+        /// <param name="currentRectangle"></param>
+        /// <param name="drawFormatheading"></param>
+        private void drawTheString(string drawString, Font drawFont, SolidBrush drawBrush, Rectangle currentRectangle, StringFormat drawFormatheading)
+        {
+            drawString = drawString.Replace(Environment.NewLine, "&en&");
+            string[] lines = drawString.Split(new string[1] {"&en&"}, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string s in lines)
+            {
+                gr.DrawString(s, drawFont, drawBrush, currentRectangle, drawFormatheading);
+                int adjHeight = 0;
+                //drawFont.Height.ToString()
+                adjHeight = (drawFont.Height / 2) + (drawFont.Height / 4);
+
+
+                currentRectangle = new Rectangle(currentRectangle.X, currentRectangle.Y + adjHeight, currentRectangle.Width,
+                    currentRectangle.Height);
+            }
+           
+
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -1120,7 +1178,7 @@ namespace TreeGenerator
                         float alpha = 1;
                         float.TryParse(salpha, out alpha);
                         ColorMatrix cm = new ColorMatrix();
-                        cm.Matrix33 = 0.25f;
+                        cm.Matrix33 = alpha;
                         ImageAttributes ia = new ImageAttributes();
                         ia.SetColorMatrix(cm);
                         Image inn=null;
@@ -1134,9 +1192,14 @@ namespace TreeGenerator
                         string file = myparams[0];
                         if (File.Exists(file) == true)
                             inn = Image.FromFile(file);
+                        float scale = 1;
 
+                        if (myparams.Count > 6)
+                        {
+                            float.TryParse(myparams[6], out scale);
+                        }
                         if (inn!=null)
-                            gr.DrawImage(inn, new Rectangle(x, y, x1, y1), 0, 0, inn.Width, inn.Height, GraphicsUnit.Pixel, ia);
+                            gr.DrawImage(inn, new Rectangle(x, y, x1*(int)scale, y1*(int)scale), 0, 0, inn.Width, inn.Height, GraphicsUnit.Pixel, ia);
                     }
                 }
 

@@ -31,6 +31,11 @@ namespace TestTreeGenerator
             table.Columns.Add("nodeType");
             table.NewRow();
             dataGridView1.DataSource = ds.Tables[0];
+            DataGridViewColumn c = dataGridView1.Columns[4];
+            c.Width = 500;
+
+            c = dataGridView1.Columns[2];
+            c.Width = 400;
         }
         public Form1()
         {
@@ -165,9 +170,44 @@ namespace TestTreeGenerator
             int size = setuptablevalueint("secondaryFontSize");
             if (size > 0)
                 myTree.format.secondaryFontSize = size;
-            myTree.format.actionboxcolor = setuptablevaluecolor("actionboxcolor");
+            myTree.format.actionbox = setuptablevaluebox("actionbox");
+            myTree.format.outcomebox = setuptablevaluebox("outcomebox");
             button1.Font = new Font(dt2.DefaultView[d_fontname][2].ToString(), float.Parse(dt2.DefaultView[1][1].ToString()));
             myTree.FontName = button1.Font.Name;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="c"></param>
+        private TreeBuilderSimple.BoxDetail setuptablevaluebox(string c)
+        {
+            TreeBuilderSimple.BoxDetail r= new TreeBuilderSimple.BoxDetail(1);
+            object value = dt2.Rows.Find(c+"color");
+
+            if (value != null)
+            {
+                Color cr = Color.Orange;
+                object value2 = (value as DataRow)[1];
+                if (value2 != null)
+                {
+                    cr = Color.FromArgb((int)value2);
+                    r.boxfillcolor = cr;
+                }
+            }
+
+            value = dt2.Rows.Find(c + "thick");
+
+            if (value != null)
+            {
+                int cr = 11;
+                object value2 = (value as DataRow)[1];
+                if (value2 != null)
+                {
+                    cr =((int)value2);
+                    r.boxthickness = cr;
+                }
+            }
+                return r;
         }
         /// <summary>
         /// 
