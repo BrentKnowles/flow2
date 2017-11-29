@@ -141,10 +141,15 @@ namespace TreeGenerator
         {
             public Color boxfillcolor;
             public int boxthickness;
+            public int gradient; // 0 no, 1 yes
+            public Color gradientColor;
             public BoxDetail(int i)
             {
                 boxfillcolor = Color.Purple;
                 boxthickness = 6;
+                gradient = 0;
+                gradientColor = Color.Purple;
+
             }
         }
         /// <summary>
@@ -159,6 +164,8 @@ namespace TreeGenerator
             public int secondaryFontSize;
             public BoxDetail actionbox;
             public BoxDetail outcomebox;
+            public BoxDetail defaultbox;
+
             public Color calloutboxcolor;
             public int xmarginextra; // move it a bit to the right
 
@@ -172,10 +179,79 @@ namespace TreeGenerator
                 secondaryFontName = "Courier New";
                 actionbox = new BoxDetail(1);
                 outcomebox = new BoxDetail(1);
+                defaultbox = new BoxDetail(1);
                 secondaryFontSize = 11;
                 boxlinewidth = 2;
                 calloutboxcolor = Color.Green;
                 xmarginextra = 0;
+            }
+            public int GetIsGradient(string nodetype)
+            {
+                if (nodetype  == "action")
+                {
+                    return actionbox.gradient;
+                }
+                if (nodetype == "default" || nodetype == "")
+                {
+                    return defaultbox.gradient;
+                }
+                if (nodetype == "outcome")
+                {
+                    return outcomebox.gradient;
+                }
+                return 0;
+            }
+            public Color GetGradientColor(string nodetype)
+            {
+                if (nodetype == "action")
+                {
+                    return actionbox.gradientColor;
+                }
+                if (nodetype == "default" || nodetype =="")
+                {
+                    return defaultbox.gradientColor;
+                }
+                if (nodetype == "outcome")
+                {
+                    return outcomebox.gradientColor;
+                }
+                return Color.Orange;
+            }
+
+            public Color GetColor(string nodetype)
+            {
+                if (nodetype == "default" || nodetype == "")
+                {
+                    return defaultbox.boxfillcolor;
+                }
+                if (nodetype == "action")
+                {
+                    return actionbox.boxfillcolor;
+                  
+                }
+                if (nodetype == "outcome")
+                {
+                    return  outcomebox.boxfillcolor;
+                   
+                }
+                return Color.Pink;
+            }
+            public int GetBoxSize(string nodetype)
+            {
+                if (nodetype == "default" || nodetype == "")
+                {
+                    return defaultbox.boxthickness;
+                }
+                if (nodetype == "action")
+                {
+                    return actionbox.boxthickness;
+                }
+                if (nodetype == "outcome")
+                {
+                    return outcomebox.boxthickness;
+                    
+                }
+                return 9;
             }
         }
         public Format format = new Format(1);
@@ -445,6 +521,15 @@ namespace TreeGenerator
             }
 
             Bitmap ResizedBMP = new Bitmap(bmp, new Size(Width, Height));
+
+            /*
+            string watermarkText = DateTime.Now.ToString();
+            // Use this to watermark the bottom-left corner
+            SizeF measuredSize = gr.MeasureString(watermarkText, drawFont); ;
+            //ResizedBMP.Height - measuredSize.Height
+            gr.DrawString(watermarkText, drawFont, new SolidBrush(Color.Black), 200, 200);
+            */
+
             //after resize, determine the change percentage
             PercentageChangeX = Convert.ToDouble(Width) / imgWidth;
             PercentageChangeY = Convert.ToDouble(Height) / imgHeight;
@@ -455,6 +540,10 @@ namespace TreeGenerator
                 //only resize coordinates if there was a resize
                 CalculateImageMapData();
             }
+
+          
+
+
             ResizedBMP.Save(Result, ImageType);
             ResizedBMP.Dispose();
             bmp.Dispose();
@@ -779,8 +868,8 @@ namespace TreeGenerator
         }
 
 
-       
 
+        Font drawFont = null; SolidBrush drawBrush = null;
         /// <summary>
         /// Draws the actual chart image.
         /// </summary>
@@ -793,14 +882,15 @@ namespace TreeGenerator
             */
             // Create font and brush.
             //
-            Font drawFont = new Font(_FontName, _FontSize);
+             drawFont = new Font(_FontName, _FontSize);
         
             
             Font secondFont = new Font(format.secondaryFontName, format.secondaryFontSize);
 
-            SolidBrush drawBrush = new SolidBrush(_FontColor);
+            drawBrush = new SolidBrush(_FontColor);
             SolidBrush drawSecondFontBrush = new SolidBrush(format.secondaryFontColor);
             SolidBrush drawBrushError = new SolidBrush(Color.Red);
+
             Pen boxPen = new Pen(_LineColor, _LineWidth);
 
 
@@ -830,8 +920,8 @@ namespace TreeGenerator
             //    Environment.NewLine +
             //    oNode.Attributes["nodeNote"].InnerText;
 
-            String drawStringCategory = oNode.Attributes["nodeCategory"].InnerText;
-            String drawStringSOD = oNode.Attributes["nodeSOD"].InnerText;
+           // String drawStringCategory = oNode.Attributes["nodeCategory"].InnerText;
+           // String drawStringSOD = oNode.Attributes["nodeSOD"].InnerText;
            // currentRectangle = new Rectangle(currentRectangle.X + format.xmarginextra, currentRectangle.Y,
            //              currentRectangle.Width, currentRectangle.Height);
             // Adjust height of the boxes
@@ -839,21 +929,11 @@ namespace TreeGenerator
             
             {
 
-                Color colorToUse = _BoxFillColor;
-                int boxSizeTouse = format.boxlinewidth;
-                // ------------------------------------------
-                // Do something with "type"
-                // ------------------------------------------
-                if (thisNodeDetails.nodetype == "action")
-                {
-                    colorToUse = format.actionbox.boxfillcolor;
-                    boxSizeTouse = format.actionbox.boxthickness;
-                }
-                if (thisNodeDetails.nodetype == "outcome")
-                {
-                    colorToUse = format.outcomebox.boxfillcolor;
-                    boxSizeTouse = format.outcomebox.boxthickness;
-                }
+                Color colorToUse = format.defaultbox.boxfillcolor;// _BoxFillColor;
+                int boxSizeTouse = format.defaultbox.boxthickness;
+                colorToUse = format.GetColor(thisNodeDetails.nodetype);
+                boxSizeTouse = format.GetBoxSize(thisNodeDetails.nodetype);
+               
 
                 // ------------------------------------------
                 // Draw existing box
@@ -905,7 +985,22 @@ namespace TreeGenerator
                 // ------
                 // Fill the rectangle
                 // ------
-                gr.FillRectangle(new SolidBrush(colorToUse), currentRectangle);
+                
+                SolidBrush defaultBrush = new SolidBrush(colorToUse);
+                Brush brushToUse = defaultBrush;
+                if (format.GetIsGradient(thisNodeDetails.nodetype) == 1)
+                {
+                    LinearGradientBrush linGrBrush = new LinearGradientBrush(
+                        new Point(currentRectangle.X, currentRectangle.Y),
+                        new Point(currentRectangle.X + 200, currentRectangle.Y),
+                        colorToUse,   // Opaque red
+                        format.GetGradientColor(thisNodeDetails.nodetype));  // Opaque blue
+
+                    brushToUse = linGrBrush;
+                }
+           
+
+                gr.FillRectangle(brushToUse, currentRectangle);
 
 
             }
@@ -1167,6 +1262,28 @@ namespace TreeGenerator
                     if (myparams.Count >0)
                     {
                         Int32.TryParse(myparams[0], out format.xmarginextra);
+                    }
+                }
+                else if (command == "text")
+                {
+                    if (myparams.Count > 1)
+                    {
+                        StringFormat drawFormatheading = new StringFormat();
+                        drawFormatheading.Alignment = StringAlignment.Center;
+                        drawFormatheading.LineAlignment = StringAlignment.Near;
+
+                        string texttouse = myparams[0];
+                        Color c = Color.Green;
+                        int c1 = 0;
+                        Int32.TryParse(myparams[1], out c1);
+                        c = Color.FromArgb(c1);
+                        SolidBrush b = new SolidBrush(c);
+                        if (texttouse.IndexOf("date") > -1)
+                        {
+                            texttouse = texttouse.Replace("date", DateTime.Now.ToShortDateString());
+                        }
+                        SizeF measuredSize = gr.MeasureString(texttouse, drawFont);
+                        gr.DrawString(texttouse, drawFont, b, new PointF(gr.VisibleClipBounds.Width - measuredSize.Width, gr.VisibleClipBounds.Height - measuredSize.Height), drawFormatheading);
                     }
                 }
                 else if (command == "image")

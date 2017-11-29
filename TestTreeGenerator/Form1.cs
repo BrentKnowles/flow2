@@ -172,6 +172,7 @@ namespace TestTreeGenerator
                 myTree.format.secondaryFontSize = size;
             myTree.format.actionbox = setuptablevaluebox("actionbox");
             myTree.format.outcomebox = setuptablevaluebox("outcomebox");
+            myTree.format.defaultbox = setuptablevaluebox("defaultbox");
             button1.Font = new Font(dt2.DefaultView[d_fontname][2].ToString(), float.Parse(dt2.DefaultView[1][1].ToString()));
             myTree.FontName = button1.Font.Name;
         }
@@ -207,7 +208,25 @@ namespace TestTreeGenerator
                     r.boxthickness = cr;
                 }
             }
-                return r;
+            value = dt2.Rows.Find(c + "gradient");
+            if (value != null)
+            {
+                int cr = 0;
+                object value2 = (value as DataRow)[1];
+                if (value2 != null)
+                {
+                    cr = ((int)value2);
+                    r.gradient = cr;
+
+                    object value3 = (value as DataRow)[2];
+                    int value3i = 0;
+                    Int32.TryParse(value3.ToString(), out value3i);
+                    //value3 = 0;
+                    if (value3 != null)
+                        r.gradientColor = Color.FromArgb(value3i);
+                }
+            }
+            return r;
         }
         /// <summary>
         /// 
