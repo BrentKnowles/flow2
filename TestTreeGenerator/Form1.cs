@@ -52,6 +52,7 @@ namespace TestTreeGenerator
             dt2.Columns.Add("valueprop", typeof(int));
             dt2.Columns.Add("valuename", typeof(string));
 
+            // NOTE: Cannot remove these as there INDEXES are  used elsewhere (for the data binding of the user controls)
             dt2.Rows.Add(new object[] {"linethick",2 });
             dt2.Rows.Add(new object[] { "fontsize", 8 });
             dt2.Rows.Add(new object[] { "fillcolor", Color.LightYellow.ToArgb() });
@@ -69,6 +70,9 @@ namespace TestTreeGenerator
             dataGridView2.DataSource = dsview.Tables[0];
            
             helpBox.Text = helpText;
+
+            DataGridViewColumn c = dataGridView2.Columns[0];
+            c.Width = 400;
         }
         DataSet ds;
 
@@ -545,7 +549,6 @@ namespace TestTreeGenerator
 
         }
 
-       
         string CEO = "ceo";
 
         private void PreloadFromDatabase()
@@ -948,6 +951,7 @@ namespace TestTreeGenerator
             //ShowTree();
             SaveFileDialog sd = new SaveFileDialog();
             sd.DefaultExt = "png";
+            sd.Filter = "png|*.png";
            
             if (sd.ShowDialog() == DialogResult.OK)
             {
@@ -972,6 +976,7 @@ namespace TestTreeGenerator
 
             SaveFileDialog sd = new SaveFileDialog();
             sd.DefaultExt = "xml";
+            sd.Filter = "XML |*.xml";
 
             if (sd.ShowDialog() == DialogResult.OK)
             {
@@ -988,6 +993,7 @@ namespace TestTreeGenerator
         {
             OpenFileDialog od = new OpenFileDialog();
             od.DefaultExt = "xml";
+            od.Filter = "XML |*.xml";
             
             if (od.ShowDialog() == DialogResult.OK)
             {
@@ -1011,7 +1017,7 @@ namespace TestTreeGenerator
         {
             SaveFileDialog sd = new SaveFileDialog();
             sd.DefaultExt = "xml";
-
+            sd.Filter = "XML |*.xml";
             if (sd.ShowDialog() == DialogResult.OK)
             {
                 dsview.WriteXml(sd.FileName);
@@ -1026,6 +1032,7 @@ namespace TestTreeGenerator
         {
             OpenFileDialog od = new OpenFileDialog();
             od.DefaultExt = "xml";
+            od.Filter = "XML |*.xml";
             if (od.ShowDialog() == DialogResult.OK)
             {
                 LoadStyle(od.FileName);
