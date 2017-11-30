@@ -838,35 +838,6 @@ namespace TreeGenerator
                 int mylevel = Int32.Parse(oNode.Attributes["level"].Value);
                 
 
-
-                
-                if (false)
-                {
-                    if (mylevel < 2)
-                    {
-                        // colorToUse = Color.Pink;
-                        if (drawString.IndexOf("PC BROWSER") == -1)
-                            drawFont = new Font(drawFont, FontStyle.Bold);
-                    }
-                    if (drawString.IndexOf("SEASON 1") > -1)
-                    {
-                        _BoxFillColor = Color.BlanchedAlmond;
-                        colorToUse = _BoxFillColor;
-                    }
-                    if (drawString.IndexOf("SEASON 2") > -1)
-                    {
-                        _BoxFillColor = Color.BurlyWood;
-                        colorToUse = _BoxFillColor;
-
-                    }
-                    if (drawString.IndexOf("SEASON 3") > -1)
-                    {
-                        _BoxFillColor = Color.CadetBlue;
-                        colorToUse = _BoxFillColor;
-
-                    }
-                }
-
                 // ------
                 // Fill the rectangle
                 // ------

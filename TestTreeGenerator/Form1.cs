@@ -539,10 +539,13 @@ namespace TestTreeGenerator
             //instantiate the object
             //myOrgChart = new OrgChartGenerator.OrgChart(myOrgData);
             myTree = new TreeBuilderSimple(GetTreeData(TreeBuilder.mode.ORG));
-            SetControlValues();    
+            SetControlValues();
+            linkLabel1.Links[0].LinkData = "Help";
+            linkLabel1.Links.Add(0, 20, "www.github.com/BrentKnowles/flow2/wiki");
+
         }
 
-        string NO_PERSON = "No person";
+       
         string CEO = "ceo";
 
         private void PreloadFromDatabase()
@@ -1090,6 +1093,27 @@ namespace TestTreeGenerator
                 ds.WriteXml(datafilelabel.Text);
             }
             
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            // Determine which link was clicked within the LinkLabel.
+            this.linkLabel1.Links[linkLabel1.Links.IndexOf(e.Link)].Visited = true;
+
+            // Display the appropriate link based on the value of the 
+            // LinkData property of the Link object.
+            string target = e.Link.LinkData as string;
+
+            // If the value looks like a URL, navigate to it.
+            // Otherwise, display it in a message box.
+            if (null != target && target.StartsWith("www"))
+            {
+                System.Diagnostics.Process.Start(target);
+            }
+            else
+            {
+                MessageBox.Show("Item clicked: " + target);
+            }
         }
     }
 }
