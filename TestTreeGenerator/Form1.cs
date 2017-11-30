@@ -170,9 +170,36 @@ namespace TestTreeGenerator
             int size = setuptablevalueint("secondaryFontSize");
             if (size > 0)
                 myTree.format.secondaryFontSize = size;
-            myTree.format.actionbox = setuptablevaluebox("actionbox");
-            myTree.format.outcomebox = setuptablevaluebox("outcomebox");
-            myTree.format.defaultbox = setuptablevaluebox("defaultbox");
+            //myTree.format.actionbox = setuptablevaluebox("actionbox");
+            //myTree.format.outcomebox = setuptablevaluebox("outcomebox");
+            //myTree.format.defaultbox = setuptablevaluebox("defaultbox");
+
+            myTree.format.boxes.Clear();
+
+            // iterate thru and look for all formats
+            foreach (DataRow row in dt2.Rows)
+            {
+                // * You must add one {box}label as an empty row in Format table
+
+                string sanitize = row[0].ToString();
+                int id = sanitize.IndexOf("{box}");
+                if (id > -1)
+                {
+                    sanitize = sanitize.Substring(id + 1+4, sanitize.Length - id - 1-4);
+                    TreeBuilderSimple.BoxDetail box = setuptablevaluebox(sanitize);
+                    myTree.format.boxes.Add(box);
+                }
+                
+            }
+
+            /*
+            TreeBuilderSimple.BoxDetail box = setuptablevaluebox("actionbox");
+            myTree.format.boxes.Add(box);
+            box = setuptablevaluebox("outcomebox");
+            myTree.format.boxes.Add(box);
+            box = setuptablevaluebox("defaultbox");
+            myTree.format.boxes.Add(box);
+            */
             button1.Font = new Font(dt2.DefaultView[d_fontname][2].ToString(), float.Parse(dt2.DefaultView[1][1].ToString()));
             myTree.FontName = button1.Font.Name;
         }
@@ -182,8 +209,9 @@ namespace TestTreeGenerator
         /// <param name="c"></param>
         private TreeBuilderSimple.BoxDetail setuptablevaluebox(string c)
         {
-            TreeBuilderSimple.BoxDetail r= new TreeBuilderSimple.BoxDetail(1);
-            object value = dt2.Rows.Find(c+"color");
+            string keyword = "";
+            TreeBuilderSimple.BoxDetail r= new TreeBuilderSimple.BoxDetail(c);
+            object value = dt2.Rows.Find(keyword+c+"color");
 
             if (value != null)
             {
@@ -196,7 +224,7 @@ namespace TestTreeGenerator
                 }
             }
 
-            value = dt2.Rows.Find(c + "thick");
+            value = dt2.Rows.Find(keyword + c + "thick");
 
             if (value != null)
             {
@@ -208,7 +236,7 @@ namespace TestTreeGenerator
                     r.boxthickness = cr;
                 }
             }
-            value = dt2.Rows.Find(c + "gradient");
+            value = dt2.Rows.Find(keyword + c + "gradient");
             if (value != null)
             {
                 int cr = 0;

@@ -143,12 +143,14 @@ namespace TreeGenerator
             public int boxthickness;
             public int gradient; // 0 no, 1 yes
             public Color gradientColor;
-            public BoxDetail(int i)
+            public string name;
+            public BoxDetail(string _name)
             {
                 boxfillcolor = Color.Purple;
                 boxthickness = 6;
                 gradient = 0;
                 gradientColor = Color.Purple;
+                name = _name;
 
             }
         }
@@ -162,10 +164,10 @@ namespace TreeGenerator
             public Color secondaryFontColor;
             public string secondaryFontName;
             public int secondaryFontSize;
-            public BoxDetail actionbox;
-            public BoxDetail outcomebox;
-            public BoxDetail defaultbox;
-
+            //public BoxDetail actionbox;
+           // public BoxDetail outcomebox;
+           // public BoxDetail defaultbox;
+            public List<BoxDetail> boxes;
             public Color calloutboxcolor;
             public int xmarginextra; // move it a bit to the right
 
@@ -177,81 +179,97 @@ namespace TreeGenerator
                 secondline_color = Color.Green;
                 secondaryFontColor = Color.Pink;
                 secondaryFontName = "Courier New";
-                actionbox = new BoxDetail(1);
-                outcomebox = new BoxDetail(1);
-                defaultbox = new BoxDetail(1);
+               // actionbox = new BoxDetail("actionbox");
+               // outcomebox = new BoxDetail("outcomebox");
+               // defaultbox = new BoxDetail("defaultbox");
                 secondaryFontSize = 11;
                 boxlinewidth = 2;
                 calloutboxcolor = Color.Green;
                 xmarginextra = 0;
+                boxes = new List<BoxDetail>(); // trying for an array of styles to make this more versatile
             }
             public int GetIsGradient(string nodetype)
             {
-                if (nodetype  == "action")
+                int defaultc = 0;
+                foreach (BoxDetail box in boxes)
                 {
-                    return actionbox.gradient;
+                    if (box.name == nodetype)
+                    {
+                        return box.gradient;
+                    }
+                    else
+                    if (box.name == "defaultbox")
+                    {
+                        defaultc = box.gradient;
+                    }
                 }
-                if (nodetype == "default" || nodetype == "")
-                {
-                    return defaultbox.gradient;
-                }
-                if (nodetype == "outcome")
-                {
-                    return outcomebox.gradient;
-                }
-                return 0;
+
+
+                return defaultc;
+
             }
             public Color GetGradientColor(string nodetype)
             {
-                if (nodetype == "action")
+                Color defaultc = Color.Orange;
+                foreach (BoxDetail box in boxes)
                 {
-                    return actionbox.gradientColor;
+                    if (box.name == nodetype)
+                    {
+                        return box.gradientColor;
+                    }
+                    else
+                    if (box.name == "defaultbox")
+                    {
+                        defaultc = box.gradientColor;
+                    }
                 }
-                if (nodetype == "default" || nodetype =="")
-                {
-                    return defaultbox.gradientColor;
-                }
-                if (nodetype == "outcome")
-                {
-                    return outcomebox.gradientColor;
-                }
-                return Color.Orange;
+
+
+                return defaultc;
+
+             
             }
 
             public Color GetColor(string nodetype)
             {
-                if (nodetype == "default" || nodetype == "")
+                Color defaultc = Color.Pink;
+                foreach (BoxDetail box in boxes)
                 {
-                    return defaultbox.boxfillcolor;
+                    if (box.name == nodetype)
+                    {
+                        return box.boxfillcolor;
+                    }
+                    else
+                    if (box.name=="defaultbox")
+                    {
+                        defaultc = box.boxfillcolor;
+                    }
                 }
-                if (nodetype == "action")
-                {
-                    return actionbox.boxfillcolor;
-                  
-                }
-                if (nodetype == "outcome")
-                {
-                    return  outcomebox.boxfillcolor;
-                   
-                }
-                return Color.Pink;
+               
+               
+                return defaultc;
             }
             public int GetBoxSize(string nodetype)
             {
-                if (nodetype == "default" || nodetype == "")
+
+                int defaultc = 9;
+                foreach (BoxDetail box in boxes)
                 {
-                    return defaultbox.boxthickness;
+                    if (box.name == nodetype)
+                    {
+                        return box.boxthickness;
+                    }
+                    else
+                    if (box.name == "defaultbox")
+                    {
+                        defaultc = box.boxthickness;
+                    }
                 }
-                if (nodetype == "action")
-                {
-                    return actionbox.boxthickness;
-                }
-                if (nodetype == "outcome")
-                {
-                    return outcomebox.boxthickness;
-                    
-                }
-                return 9;
+
+
+                return defaultc;
+
+
             }
         }
         public Format format = new Format(1);
@@ -929,8 +947,8 @@ namespace TreeGenerator
             
             {
 
-                Color colorToUse = format.defaultbox.boxfillcolor;// _BoxFillColor;
-                int boxSizeTouse = format.defaultbox.boxthickness;
+                Color colorToUse = format.GetColor("defaultbox");// _BoxFillColor;
+                int boxSizeTouse = format.GetBoxSize("defaultbox");
                 colorToUse = format.GetColor(thisNodeDetails.nodetype);
                 boxSizeTouse = format.GetBoxSize(thisNodeDetails.nodetype);
                
@@ -1283,7 +1301,7 @@ namespace TreeGenerator
                             texttouse = texttouse.Replace("date", DateTime.Now.ToShortDateString());
                         }
                         SizeF measuredSize = gr.MeasureString(texttouse, drawFont);
-                        gr.DrawString(texttouse, drawFont, b, new PointF(gr.VisibleClipBounds.Width - measuredSize.Width, gr.VisibleClipBounds.Height - measuredSize.Height), drawFormatheading);
+                        gr.DrawString(texttouse, drawFont, b, new PointF(gr.VisibleClipBounds.Width - (measuredSize.Width/2), gr.VisibleClipBounds.Height - measuredSize.Height), drawFormatheading);
                     }
                 }
                 else if (command == "image")
