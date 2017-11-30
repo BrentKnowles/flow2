@@ -10,15 +10,15 @@
   </dsview>
   <dsview>
     <viewkey>fillcolor</viewkey>
-    <valueprop>-1</valueprop>
+    <valueprop>-12582912</valueprop>
   </dsview>
   <dsview>
     <viewkey>verticalspace</viewkey>
-    <valueprop>41</valueprop>
+    <valueprop>47</valueprop>
   </dsview>
   <dsview>
     <viewkey>hspace</viewkey>
-    <valueprop>10</valueprop>
+    <valueprop>12</valueprop>
   </dsview>
   <dsview>
     <viewkey>margin</viewkey>
@@ -26,15 +26,15 @@
   </dsview>
   <dsview>
     <viewkey>fontcolor</viewkey>
-    <valueprop>-16777216</valueprop>
+    <valueprop>-2039071</valueprop>
   </dsview>
   <dsview>
     <viewkey>linecolor</viewkey>
-    <valueprop>-16777216</valueprop>
+    <valueprop>-128</valueprop>
   </dsview>
   <dsview>
     <viewkey>bgcolor</viewkey>
-    <valueprop>-1</valueprop>
+    <valueprop>-16777216</valueprop>
   </dsview>
   <dsview>
     <viewkey>boxheight</viewkey>
@@ -67,6 +67,6 @@
   </dsview>
   <dsview>
     <viewkey>actionboxcolor</viewkey>
-    <valueprop>-16711681</valueprop>
+    <valueprop>-16777216</valueprop>
   </dsview>
 </NewDataSet>
