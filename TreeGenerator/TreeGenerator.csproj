@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Box.cs" />
+    <Compile Include="formatstructure.cs" />
     <Compile Include="NodePos.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TreeBuilder.cs" />

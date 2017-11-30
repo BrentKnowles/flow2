@@ -186,7 +186,7 @@ namespace TestTreeGenerator
                 if (id > -1)
                 {
                     sanitize = sanitize.Substring(id + 1+4, sanitize.Length - id - 1-4);
-                    TreeBuilderSimple.BoxDetail box = setuptablevaluebox(sanitize);
+                    BoxDetail box = setuptablevaluebox(sanitize);
                     myTree.format.boxes.Add(box);
                 }
                 
@@ -207,10 +207,10 @@ namespace TestTreeGenerator
         /// 
         /// </summary>
         /// <param name="c"></param>
-        private TreeBuilderSimple.BoxDetail setuptablevaluebox(string c)
+        private BoxDetail setuptablevaluebox(string c)
         {
             string keyword = "";
-            TreeBuilderSimple.BoxDetail r= new TreeBuilderSimple.BoxDetail(c);
+            BoxDetail r= new BoxDetail(c);
             object value = dt2.Rows.Find(keyword+c+"color");
 
             if (value != null)
@@ -254,8 +254,57 @@ namespace TestTreeGenerator
                         r.gradientColor = Color.FromArgb(value3i);
                 }
             }
+            r.primaryFont = UpdateBoxForFonts(r.primaryFont,c,"font",keyword);
+            r.secondaryFont = UpdateBoxForFonts(r.primaryFont, c, "secondaryfont", keyword);
+
+
+
             return r;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="v"></param>
+        /// <returns></returns>
+        private FontDetail UpdateBoxForFonts(FontDetail r, string c, string typeoffonttoupdate, string keyword)
+        {
+            object value = dt2.Rows.Find(keyword + c + typeoffonttoupdate+"size");
+            if (value != null)
+            {
+                int cr = 0;
+                object value2 = (value as DataRow)[1];
+                if (value2 != null)
+                {
+                    cr = ((int)value2);
+                    r.fontsize = cr;
+
+                }
+            }
+            value = dt2.Rows.Find(keyword + c + typeoffonttoupdate);
+            if (value != null)
+            {
+
+                object value2 = (value as DataRow)[2];
+                if (value2 != null)
+                {
+
+                    r.font = value2.ToString();
+                }
+            }
+            value = dt2.Rows.Find(keyword + c + typeoffonttoupdate+"color");
+            if (value != null)
+            {
+                Color cr = Color.Orange;
+                object value2 = (value as DataRow)[1];
+                if (value2 != null)
+                {
+                    cr = Color.FromArgb((int)value2);
+                    r.fontcolor = cr;
+                }
+            }
+            return r;
+        }
+
         /// <summary>
         /// 
         /// </summary>

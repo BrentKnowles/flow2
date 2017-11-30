@@ -137,141 +137,8 @@ namespace TreeGenerator
 
 
         }
-        public struct BoxDetail
-        {
-            public Color boxfillcolor;
-            public int boxthickness;
-            public int gradient; // 0 no, 1 yes
-            public Color gradientColor;
-            public string name;
-            public BoxDetail(string _name)
-            {
-                boxfillcolor = Color.Purple;
-                boxthickness = 6;
-                gradient = 0;
-                gradientColor = Color.Purple;
-                name = _name;
-
-            }
-        }
-        /// <summary>
-        /// A structure to hold format details, so they are more easily "found"
-        /// </summary>
-        public struct Format
-        {
-            public int secondline_thick;
-            public Color secondline_color;
-            public Color secondaryFontColor;
-            public string secondaryFontName;
-            public int secondaryFontSize;
-            //public BoxDetail actionbox;
-           // public BoxDetail outcomebox;
-           // public BoxDetail defaultbox;
-            public List<BoxDetail> boxes;
-            public Color calloutboxcolor;
-            public int xmarginextra; // move it a bit to the right
-
-            // this is how thick the border around a box is (separated from main line width)
-            public int boxlinewidth;
-            public Format(int k)
-            {
-                secondline_thick = 4;
-                secondline_color = Color.Green;
-                secondaryFontColor = Color.Pink;
-                secondaryFontName = "Courier New";
-               // actionbox = new BoxDetail("actionbox");
-               // outcomebox = new BoxDetail("outcomebox");
-               // defaultbox = new BoxDetail("defaultbox");
-                secondaryFontSize = 11;
-                boxlinewidth = 2;
-                calloutboxcolor = Color.Green;
-                xmarginextra = 0;
-                boxes = new List<BoxDetail>(); // trying for an array of styles to make this more versatile
-            }
-            public int GetIsGradient(string nodetype)
-            {
-                int defaultc = 0;
-                foreach (BoxDetail box in boxes)
-                {
-                    if (box.name == nodetype)
-                    {
-                        return box.gradient;
-                    }
-                    else
-                    if (box.name == "defaultbox")
-                    {
-                        defaultc = box.gradient;
-                    }
-                }
-
-
-                return defaultc;
-
-            }
-            public Color GetGradientColor(string nodetype)
-            {
-                Color defaultc = Color.Orange;
-                foreach (BoxDetail box in boxes)
-                {
-                    if (box.name == nodetype)
-                    {
-                        return box.gradientColor;
-                    }
-                    else
-                    if (box.name == "defaultbox")
-                    {
-                        defaultc = box.gradientColor;
-                    }
-                }
-
-
-                return defaultc;
-
-             
-            }
-
-            public Color GetColor(string nodetype)
-            {
-                Color defaultc = Color.Pink;
-                foreach (BoxDetail box in boxes)
-                {
-                    if (box.name == nodetype)
-                    {
-                        return box.boxfillcolor;
-                    }
-                    else
-                    if (box.name=="defaultbox")
-                    {
-                        defaultc = box.boxfillcolor;
-                    }
-                }
-               
-               
-                return defaultc;
-            }
-            public int GetBoxSize(string nodetype)
-            {
-
-                int defaultc = 9;
-                foreach (BoxDetail box in boxes)
-                {
-                    if (box.name == nodetype)
-                    {
-                        return box.boxthickness;
-                    }
-                    else
-                    if (box.name == "defaultbox")
-                    {
-                        defaultc = box.boxthickness;
-                    }
-                }
-
-
-                return defaultc;
-
-
-            }
-        }
+      
+        
         public Format format = new Format(1);
 
         #region Public Properties
@@ -897,16 +764,21 @@ namespace TreeGenerator
             ---------------------------------------------------------------
             Setup
             ---------------------------------------------------------------
+
             */
             // Create font and brush.
             //
-             drawFont = new Font(_FontName, _FontSize);
+
+            NodeDetails thisNodeDetails = listOfNodeStructures[Int32.Parse(oNode.Attributes["nodedata"].InnerText)];
+
+
+            drawFont = new Font(format.GetBoxPrimaryFontName(thisNodeDetails.nodetype), format.GetBoxPrimaryBoxSize(thisNodeDetails.nodetype));
         
             
-            Font secondFont = new Font(format.secondaryFontName, format.secondaryFontSize);
+            Font secondFont = new Font(format.GetBoxSecondaryFontName(thisNodeDetails.nodetype), format.GetBoxSecondaryBoxSize(thisNodeDetails.nodetype));
 
-            drawBrush = new SolidBrush(_FontColor);
-            SolidBrush drawSecondFontBrush = new SolidBrush(format.secondaryFontColor);
+            drawBrush = new SolidBrush(format.GetBoxPrimaryFontColor(thisNodeDetails.nodetype));
+            SolidBrush drawSecondFontBrush = new SolidBrush(format.GetBoxSecondaryFontColor(thisNodeDetails.nodetype));
             SolidBrush drawBrushError = new SolidBrush(Color.Red);
 
             Pen boxPen = new Pen(_LineColor, _LineWidth);
@@ -922,7 +794,6 @@ namespace TreeGenerator
             drawFormatSecond.LineAlignment = StringAlignment.Far;
             //find children
 
-            NodeDetails thisNodeDetails = listOfNodeStructures[Int32.Parse(oNode.Attributes["nodedata"].InnerText)];
            
             /*
              ---------------------------------------------------------------
@@ -966,10 +837,6 @@ namespace TreeGenerator
                 // x and y are actually screen locations 
                 int mylevel = Int32.Parse(oNode.Attributes["level"].Value);
                 
-
-               
-               
-
 
 
                 
