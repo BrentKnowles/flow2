@@ -29,6 +29,7 @@ namespace TestTreeGenerator
             table.Columns.Add("nodeNote");
             table.Columns.Add("nodeScripting");
             table.Columns.Add("nodeType");
+            table.Columns.Add("sortorder");
             table.NewRow();
             dataGridView1.DataSource = ds.Tables[0];
             DataGridViewColumn c = dataGridView1.Columns[4];
@@ -1121,6 +1122,31 @@ namespace TestTreeGenerator
             {
                 MessageBox.Show("Item clicked: " + target);
             }
+        }
+
+        private void toolStripButton7_Click(object sender, EventArgs e)
+        {
+           
+        }
+        /// <summary>
+        /// does a sort
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void toolStripButton8_Click(object sender, EventArgs e)
+        {
+            if (dataGridView1.Columns.Contains("sortorder"))
+            {
+                ds.Tables[0].DefaultView.Sort = "sortorder";
+                DataTable dt = ds.Tables[0].DefaultView.ToTable();
+                ds.Tables.Clear();
+                ds.Tables.Add(dt);
+                dataGridView1.Sort(this.dataGridView1.Columns["sortorder"], ListSortDirection.Ascending);
+                MessageBox.Show("(needs figuring out). Sort applied. You can save but need to reload the file to continue editing.");
+            }
+
+            else
+                MessageBox.Show("sortorder does not exist in this table"); // add it?
         }
     }
 }

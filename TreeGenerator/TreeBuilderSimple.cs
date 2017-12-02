@@ -1139,7 +1139,8 @@ namespace TreeGenerator
                             texttouse = texttouse.Replace("date", DateTime.Now.ToShortDateString());
                         }
                         SizeF measuredSize = gr.MeasureString(texttouse, drawFont);
-                        gr.DrawString(texttouse, drawFont, b, new PointF(gr.VisibleClipBounds.Width - (measuredSize.Width/2), gr.VisibleClipBounds.Height - measuredSize.Height), drawFormatheading);
+                        int nudge = 5;
+                        gr.DrawString(texttouse, drawFont, b, new PointF(gr.VisibleClipBounds.Width - (measuredSize.Width/2)-nudge, gr.VisibleClipBounds.Height - measuredSize.Height), drawFormatheading);
                     }
                 }
                 else if (command == "image")
