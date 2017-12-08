@@ -1030,43 +1030,46 @@ namespace TreeGenerator
                 {
                     lineToLine liner = new lineToLine();
                     liner.source = me; // a number id
-
-                    liner.dest = myparams[0];
                     string linetype = linetypes.goodarrow.ToString();
 
-                    if (myparams.Count > 1)
+                    if (myparams.Count > 0)
                     {
-                        linetype = myparams[1];
-                    }
-                    liner.destx = Placement.Right;
-                    liner.desty = Placement.Bottom;
-                    if (myparams.Count > 5)
-                    {
-                        Placement thex = 0;
-                        Placement they = 0;
-                        for (int i = 0; i < 2; i++)
+                        liner.dest = myparams[0];
+                    
+                        if (myparams.Count > 1)
                         {
-                            if (myparams[2+(i*2)] == "right") thex = Placement.Right;
-                            if (myparams[2 + (i * 2)] == "left") thex = Placement.Left;
-                            if (myparams[2 + (i * 2)] == "middle") thex = Placement.Middle;
-                            if (myparams[3 + (i * 2)] == "middle") they = Placement.Middle;
-                            if (myparams[3 + (i * 2)] == "top") they = Placement.Top;
-                            if (myparams[3 + (i * 2)] == "bottom") they = Placement.Bottom;
-
-                            if (i == 0)
-                            {
-                                liner.sourcex = thex;
-                                liner.sourcey = they;
-                            }
-                            if (i == 1)
-                            {
-                                liner.destx = thex;
-                                liner.desty = they;
-                            }
+                            linetype = myparams[1];
                         }
-                       
-                        
+                        liner.destx = Placement.Right;
+                        liner.desty = Placement.Bottom;
+                        if (myparams.Count > 5)
+                        {
+                            Placement thex = 0;
+                            Placement they = 0;
+                            for (int i = 0; i < 2; i++)
+                            {
+                                if (myparams[2 + (i * 2)] == "right") thex = Placement.Right;
+                                if (myparams[2 + (i * 2)] == "left") thex = Placement.Left;
+                                if (myparams[2 + (i * 2)] == "middle") thex = Placement.Middle;
+                                if (myparams[3 + (i * 2)] == "middle") they = Placement.Middle;
+                                if (myparams[3 + (i * 2)] == "top") they = Placement.Top;
+                                if (myparams[3 + (i * 2)] == "bottom") they = Placement.Bottom;
 
+                                if (i == 0)
+                                {
+                                    liner.sourcex = thex;
+                                    liner.sourcey = they;
+                                }
+                                if (i == 1)
+                                {
+                                    liner.destx = thex;
+                                    liner.desty = they;
+                                }
+                            }
+
+
+
+                        }
                     }
                     liner.linetype = linetype;
                     listOfLinesToAdd.Add(liner);
