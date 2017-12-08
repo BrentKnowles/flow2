@@ -1148,5 +1148,45 @@ namespace TestTreeGenerator
             else
                 MessageBox.Show("sortorder does not exist in this table"); // add it?
         }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listBox1.SelectedItem != null)
+            {
+                roweditortarget.Controls.Clear();
+                BoxRowEditor boxy = new BoxRowEditor();
+                roweditortarget.Controls.Add(boxy);
+                boxy.Dock = DockStyle.Fill;
+
+                string property = listBox1.SelectedItem.ToString();
+                if (property != "")
+                {
+                    // Now we parse the dataset that contains format information and
+                    // try to find the "property"
+
+                    string fullproperty = "{box}" + property;
+                    // look for presence of {box} style
+                    // before looking for subelements
+                    // iterate thru and look for all formats
+                    foreach (DataRow row in dt2.Rows)
+                    {
+                        // * You must add one {box}label as an empty row in Format table
+
+                        string sanitize = row[0].ToString();
+                        int id = sanitize.IndexOf(fullproperty);
+                        if (id > -1)
+                        {
+                            // found this style
+                            BoxDetail box = setuptablevaluebox(sanitize);
+                            boxy.SetDetails(box);
+                        }
+                        
+
+                    }
+                }
+
+            }
+
+        }
     }
 }

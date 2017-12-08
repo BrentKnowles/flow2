@@ -42,10 +42,23 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseRowEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="BaseRowEditor.Designer.cs">
+      <DependentUpon>BaseRowEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Box.cs" />
+    <Compile Include="BoxRowEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="BoxRowEditor.Designer.cs">
+      <DependentUpon>BoxRowEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="formatstructure.cs" />
     <Compile Include="NodePos.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -73,6 +86,14 @@
     <None Include="TreeData.xss">
       <DependentUpon>TreeData.xsd</DependentUpon>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="BaseRowEditor.resx">
+      <DependentUpon>BaseRowEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BoxRowEditor.resx">
+      <DependentUpon>BoxRowEditor.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
