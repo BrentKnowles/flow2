@@ -2,7 +2,12 @@
 using System.Collections.Generic;
 namespace TreeGenerator
 {
-
+    public enum BoxType
+    {
+        rect = 0,
+        ellipse = 1,
+        diamond = 2
+    }
     public struct FontDetail
     {
         public string font;
@@ -24,6 +29,7 @@ namespace TreeGenerator
         public string name;
         public FontDetail primaryFont;
         public FontDetail secondaryFont;
+        public BoxType boxType;
         public BoxDetail(string _name)
         {
             boxfillcolor = Color.Purple;
@@ -33,7 +39,7 @@ namespace TreeGenerator
             name = _name;
             primaryFont = new FontDetail(1);
             secondaryFont = new FontDetail(1);
-
+            boxType = BoxType.rect;
 
         }
     }
@@ -90,6 +96,25 @@ namespace TreeGenerator
 
             return defaultc;
 
+        }
+
+        public BoxType GetBoxType(string nodetype)
+        {
+            BoxType defaultc = BoxType.rect;
+            foreach (BoxDetail box in boxes)
+            {
+                if (box.name == nodetype)
+                {
+                    return box.boxType;
+                }
+                else
+                if (box.name == "defaultbox")
+                {
+                    defaultc = box.boxType;
+                }
+
+            }
+            return defaultc;
         }
         public Color GetGradientColor(string nodetype)
         {
