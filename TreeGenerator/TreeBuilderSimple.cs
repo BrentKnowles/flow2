@@ -753,6 +753,20 @@ namespace TreeGenerator
         }
 
 
+        private List<PointF> GetDiamondPoints(Rectangle currentRectangle)
+        {
+            List<PointF> diamond = new List<PointF>();
+            // to give more room we make slightly wider
+            // had to set to 0 because it makes the lines not connect
+            int WIDER = 15;
+            diamond.Add(new PointF(currentRectangle.X + (currentRectangle.Width / 2), currentRectangle.Y));
+            diamond.Add(new PointF(currentRectangle.X + (currentRectangle.Width) + WIDER, currentRectangle.Y + (currentRectangle.Height / 2)));
+            diamond.Add(new PointF(currentRectangle.X + (currentRectangle.Width / 2), currentRectangle.Y + (currentRectangle.Height)));
+            diamond.Add(new PointF(currentRectangle.X - WIDER, currentRectangle.Y + (currentRectangle.Height / 2)));
+            diamond.Add(new PointF(currentRectangle.X + (currentRectangle.Width / 2), currentRectangle.Y));
+            return diamond;
+        }
+
 
         Font drawFont = null; SolidBrush drawBrush = null;
         /// <summary>
@@ -786,12 +800,12 @@ namespace TreeGenerator
 
             StringFormat drawFormatheading = new StringFormat();
             drawFormatheading.Alignment = StringAlignment.Center;
-            drawFormatheading.LineAlignment = StringAlignment.Near;
+            
             
 
             StringFormat drawFormatSecond = new StringFormat();
             drawFormatSecond.Alignment = StringAlignment.Near;
-            drawFormatSecond.LineAlignment = StringAlignment.Far;
+            drawFormatSecond.LineAlignment = StringAlignment.Center;
             //find children
 
            
@@ -822,7 +836,10 @@ namespace TreeGenerator
                 int boxSizeTouse = format.GetBoxSize("defaultbox");
                 colorToUse = format.GetColor(thisNodeDetails.nodetype);
                 boxSizeTouse = format.GetBoxSize(thisNodeDetails.nodetype);
-               
+                BoxType boxType = format.GetBoxType(thisNodeDetails.nodetype);
+
+                // finally we can override color with a scripting command
+                colorToUse = preProcessScriptingForColor(thisNodeDetails,colorToUse);
 
                 // ------------------------------------------
                 // Draw existing box
@@ -830,8 +847,23 @@ namespace TreeGenerator
                 if (boxSizeTouse > 0)
                 {
                     Pen boxPen2 = new Pen(_LineColor, boxSizeTouse);
+                    switch (boxType)
+                    {
+                        case BoxType.rect:
+                            gr.DrawRectangle(boxPen2, currentRectangle);
+                        break;
+                        case BoxType.ellipse:
+                            gr.DrawEllipse(boxPen2, currentRectangle);
+                        break;
+                        case BoxType.diamond:
+                            
+                            // diamond.Add(new PointF(currentRectangle.X + (currentRectangle.Width / 2), currentRectangle.Y));
+                            // diamond.Add(new PointF(currentRectangle.X + currentRectangle.Width, currentRectangle.Height - (currentRectangle.Height / 2)));
+                            gr.DrawPolygon(boxPen2, GetDiamondPoints(currentRectangle).ToArray());
+                            break;
+                    }
                     
-                    gr.DrawRectangle(boxPen2, currentRectangle);
+           
                 }
 
                 // x and y are actually screen locations 
@@ -854,36 +886,62 @@ namespace TreeGenerator
 
                     brushToUse = linGrBrush;
                 }
-           
+                switch (boxType)
+                {
+                    case BoxType.rect:
+                        gr.FillRectangle(brushToUse, currentRectangle);
+                        break;
+                    case BoxType.ellipse:
+                        gr.FillEllipse(brushToUse, currentRectangle);
+                        break;
+                    case BoxType.diamond:
+                        if (format.GetIsGradient(thisNodeDetails.nodetype) == 1)
+                        {
+                            LinearGradientBrush linGrBrush = new LinearGradientBrush(
+                                // -14 / +14 is to handle the extra width I add to triangles
+                                new Point(currentRectangle.X -14 , currentRectangle.Y),
+                                new Point(currentRectangle.X + currentRectangle.Width +14, currentRectangle.Y),
+                                colorToUse,   // Opaque red
+                                format.GetGradientColor(thisNodeDetails.nodetype));  // Opaque blue
 
-                gr.FillRectangle(brushToUse, currentRectangle);
+                            brushToUse = linGrBrush;
+                        }
+                        gr.FillPolygon(brushToUse, GetDiamondPoints(currentRectangle).ToArray());
+                        break;
+                }
+
+               
 
 
             }
 
-           
-
-            // ------
-            // Write string
-            // ------
 
 
+
+
+            ///////////////////////
+            //
+            //        TEXT 
+            //
+            //////////////////////
             // Create string to draw.
             // because we escape apostophes out
             drawString = drawString.Replace("#", "'");
 
-            // Draw string to screen.
-            //if (drawString.IndexOf("No person") > -1)
-            //{
-            //     gr.DrawString(drawString, drawFont, drawBrushError, currentRectangle, drawFormat);
-            // }
-            // else
-            drawTheString(drawString, drawFont, drawBrush, currentRectangle, drawFormatheading);
+            StringFormat useThisFormat = drawFormatheading;
+                // we center text 
+            if (secondString =="")
+                useThisFormat.LineAlignment = StringAlignment.Center;
+            drawTheString(drawString, drawFont, drawBrush, currentRectangle, useThisFormat);
+
+            useThisFormat = drawFormatSecond;
+            if (drawString.Length > 20)
+                useThisFormat.LineAlignment = StringAlignment.Far;
             // using this for more than ORG so got rid of the exception 9/27/2017
             //TODO : how to measure propr
             Rectangle secondRectangle = new Rectangle(currentRectangle.X + 10, currentRectangle.Y, currentRectangle.Width
                 , currentRectangle.Height);
-            gr.DrawString(secondString, secondFont, drawSecondFontBrush, currentRectangle, drawFormatSecond);
+            gr.DrawString(secondString, secondFont, drawSecondFontBrush, currentRectangle, useThisFormat);
 
 
 
@@ -955,6 +1013,8 @@ namespace TreeGenerator
             }
         }
 
+       
+
         /// <summary>
         /// Creating a wrapper because I want to draw each line as a separate line?
         /// </summary>
@@ -981,7 +1041,90 @@ namespace TreeGenerator
            
 
         }
+       /// <summary>
+       /// 
+       /// </summary>
+       /// <param name="thisNodeDetails"></param>
+       /// <param name="colorToUse"></param>
+       /// <returns></returns>
+        private Color preProcessScriptingForColor(NodeDetails thisNodeDetails, Color colorToUse)
+        {
+         
+            /* IDeally need a way to 
+            process everything
+            so doPreProcess(thisNodeDetails, forColor(colorToUse));
+            */   
+            if (thisNodeDetails.scripting != "scripting" && thisNodeDetails.scripting != "")
+            {
+                // parse script
+                string[] commands = thisNodeDetails.scripting.Split(new char[1] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                for (int i = 0; i < commands.Length; i++)
+                {
+                    int pos1 = commands[i].IndexOf("(");
 
+                    if (pos1 > 0)
+                    {
+
+                        string command;
+                        List<string> myparams = BuildParams(commands[i], pos1);
+                        command = commands[i].Substring(0, pos1);
+                        command = command.ToLower().Trim();
+
+                        ////
+                        //  LINES
+                        ///
+                        if (command == "fillcolor")
+                        {
+                            Color newColor = colorToUse;
+                            string color = myparams[0];
+                            //#8eba30
+                            if (color[0] =='#')
+                            {
+                                newColor = System.Drawing.ColorTranslator.FromHtml(color);
+                            }
+                            else
+                                newColor = Color.FromName(color);
+                            return newColor;
+                        }
+                    }
+                }
+               
+            }
+            return colorToUse;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="v"></param>
+        /// <param name="pos1"></param>
+        /// <returns></returns>
+        private List<string> BuildParams(string v,int pos1)
+        {
+            int pos2 = v.IndexOf(")");
+            List<string> myparams = new List<string>();  
+            if (pos2 > pos1)
+            {
+                string tmps = v.Substring(pos1 + 1, pos2 - pos1 - 1);
+
+                // we have a closing bracket so let's look for comma delimitted parameters    
+                string[] tmpa = tmps.Split(new char[1] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                //if (tmpa.Length == 1)
+                // {
+                //     param1 = tmpa[0];
+                // }
+                if (tmpa.Length > 0)
+                {
+                    foreach (string s in tmpa)
+                    {
+                        myparams.Add(s.Trim());
+                    }
+
+                }
+
+                //TODO a parameter array?
+            }
+            return myparams;
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -990,38 +1133,20 @@ namespace TreeGenerator
         private void ProcessScripting(string v, string me, Rectangle currentRectangle)
         {
             int pos1 = v.IndexOf("(");
+         
             if (pos1 > 0)
             {
-                string command = v.Substring(0, pos1);
+                
+                string command;
+               
+
+                
+                List<string> myparams = BuildParams(v,pos1);
+
+                command = v.Substring(0, pos1);
 
                 command = command.ToLower().Trim();
 
-                 List<string> myparams = new List<string>();
-
-           
-                int pos2 = v.IndexOf(")");
-                if (pos2 > pos1)
-                {
-                    string tmps = v.Substring(pos1 + 1, pos2 - pos1 - 1);
-
-                    // we have a closing bracket so let's look for comma delimitted parameters    
-                    string[] tmpa = tmps.Split(new char[1] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                    //if (tmpa.Length == 1)
-                   // {
-                   //     param1 = tmpa[0];
-                   // }
-                    if (tmpa.Length > 0)
-                    {
-                        foreach (string s in tmpa)
-                        {
-                            myparams.Add(s.Trim());
-                        }
-                        
-                    }
-                    
-                    //TODO a parameter array?
-                }
-                
 
                 ////
                 //  LINES
@@ -1035,7 +1160,7 @@ namespace TreeGenerator
                     if (myparams.Count > 0)
                     {
                         liner.dest = myparams[0];
-                    
+
                         if (myparams.Count > 1)
                         {
                             linetype = myparams[1];
@@ -1075,10 +1200,24 @@ namespace TreeGenerator
                     listOfLinesToAdd.Add(liner);
                 }
                 else
+                if (command == "imageat")
+                {
+                    string file = myparams[0];
+                    try
+                    {
+                        gr.DrawImage(Image.FromFile(file), new Point(currentRectangle.X + (currentRectangle.Width /2), 
+                            currentRectangle.Y + currentRectangle.Height - 20));
+                    }
+                    catch (Exception ex)
+                    {
+                        
+                    }
+                }
+                else
                 if (command == "calloutbox")
                 {
                     // draw secondary box 1 - Category - if necessary
-                   // SolidBrush drawBrush_Category = new SolidBrush(Color.Black);
+                    // SolidBrush drawBrush_Category = new SolidBrush(Color.Black);
                     SolidBrush fillBrush_Category = new SolidBrush(Color.White);
                     // draw secondary box 2 - Person - if necessary
                     Pen boxPen_CATEGORY = new Pen(format.secondaryFontColor, 2);
@@ -1093,7 +1232,7 @@ namespace TreeGenerator
 
                     if (Int32.TryParse(myparams[1], out nParam2))
                     {
-                       
+
                     }
                     if (Int32.TryParse(myparams[2], out nParam3))
                     {
@@ -1107,18 +1246,18 @@ namespace TreeGenerator
                         Int32.TryParse(myparams[3], out myposition);
                     Color toUse = Color.Black;
 
-                        toUse = format.calloutboxcolor;// GetColorByIDX(drawStringCategory, catHash);
-                        boxPen_CATEGORY = new Pen(toUse, 4);
-                        //currentRectangle = 
-                        DrawSecondaryBox(new SolidBrush(toUse), fillBrush_Category, boxPen_CATEGORY, drawFont_CATEGORY, 
-                            drawFormatheading, currentRectangle.Location.X,
-                        currentRectangle.Y, currentRectangle, myparams[0], new Size(nParam2, nParam3), myposition);
+                    toUse = format.calloutboxcolor;// GetColorByIDX(drawStringCategory, catHash);
+                    boxPen_CATEGORY = new Pen(toUse, 4);
+                    //currentRectangle = 
+                    DrawSecondaryBox(new SolidBrush(toUse), fillBrush_Category, boxPen_CATEGORY, drawFont_CATEGORY,
+                        drawFormatheading, currentRectangle.Location.X,
+                    currentRectangle.Y, currentRectangle, myparams[0], new Size(nParam2, nParam3), myposition);
 
 
                 }
                 else if (command == "addtomarginleft")
                 {
-                    if (myparams.Count >0)
+                    if (myparams.Count > 0)
                     {
                         Int32.TryParse(myparams[0], out format.xmarginextra);
                     }
@@ -1143,7 +1282,7 @@ namespace TreeGenerator
                         }
                         SizeF measuredSize = gr.MeasureString(texttouse, drawFont);
                         int nudge = 5;
-                        gr.DrawString(texttouse, drawFont, b, new PointF(gr.VisibleClipBounds.Width - (measuredSize.Width/2)-nudge, gr.VisibleClipBounds.Height - measuredSize.Height), drawFormatheading);
+                        gr.DrawString(texttouse, drawFont, b, new PointF(gr.VisibleClipBounds.Width - (measuredSize.Width / 2) - nudge, gr.VisibleClipBounds.Height - measuredSize.Height), drawFormatheading);
                     }
                 }
                 else if (command == "image")
@@ -1158,9 +1297,9 @@ namespace TreeGenerator
                         cm.Matrix33 = alpha;
                         ImageAttributes ia = new ImageAttributes();
                         ia.SetColorMatrix(cm);
-                        Image inn=null;
-                        int x,y,x1,y1 = 0;
-                        Int32.TryParse(myparams[1],out x);
+                        Image inn = null;
+                        int x, y, x1, y1 = 0;
+                        Int32.TryParse(myparams[1], out x);
                         Int32.TryParse(myparams[2], out y);
                         Int32.TryParse(myparams[3], out x1);
                         Int32.TryParse(myparams[4], out y1);
@@ -1175,8 +1314,8 @@ namespace TreeGenerator
                         {
                             float.TryParse(myparams[6], out scale);
                         }
-                        if (inn!=null)
-                            gr.DrawImage(inn, new Rectangle(x, y, x1*(int)scale, y1*(int)scale), 0, 0, inn.Width, inn.Height, GraphicsUnit.Pixel, ia);
+                        if (inn != null)
+                            gr.DrawImage(inn, new Rectangle(x, y, x1 * (int)scale, y1 * (int)scale), 0, 0, inn.Width, inn.Height, GraphicsUnit.Pixel, ia);
                     }
                 }
 
@@ -1184,6 +1323,8 @@ namespace TreeGenerator
             }
            
         }
+
+      
 
         private Color GetColorByIDX(string personLookingAt, System.Collections.Hashtable hashy)
         {
@@ -1228,6 +1369,8 @@ namespace TreeGenerator
                             newSize);
                 }
             }
+            // gr.DrawEllipse(boxPen_CATEGORY, miniRect);
+           // gr.FillEllipse(fillBrush_Category, miniRect);
             gr.DrawRectangle(boxPen_CATEGORY, miniRect);
             gr.FillRectangle(fillBrush_Category, miniRect);
             gr.DrawString(name, drawFont_CATEGORY, drawBrush_Category, miniRect, drawFormat);

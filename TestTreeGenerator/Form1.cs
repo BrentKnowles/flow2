@@ -259,6 +259,18 @@ namespace TestTreeGenerator
                         r.gradientColor = Color.FromArgb(value3i);
                 }
             }
+            value = dt2.Rows.Find(keyword + c + "boxtype");
+            if (value != null)
+            {
+                int cr = 11;
+                object value2 = (value as DataRow)[1];
+                if (value2 != null)
+                {
+                    cr = ((int)value2);
+                    r.boxType = (BoxType)cr;
+                }
+            
+            }
             r.primaryFont = UpdateBoxForFonts(r.primaryFont,c,"font",keyword);
             r.secondaryFont = UpdateBoxForFonts(r.primaryFont, c, "secondaryfont", keyword);
 
